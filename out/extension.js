@@ -135,15 +135,6 @@ function getSectionLengths() {
     // Position at start of line and get a range for the entire line
     let newPos = currentPos.with(currentPos.line, 0);
     editor.selection = new vscode.Selection(newPos, newPos);
-    let config = vscode.workspace.getConfiguration("oh-itemizer");
-    let preserveWhitespace = config.preserveWhitespace;
-    // Move to after the whitespace
-    let leadingWhitespaceCount = lineText.firstNonWhitespaceCharacterIndex;
-    newPos = newPos.with(newPos.line, leadingWhitespaceCount);
-    if (preserveWhitespace === false) {
-        // Set to 0 if not preserving leading whitespace
-        leadingWhitespaceCount = 0;
-    }
     // Discover item Type
     var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
     if (wordRange && wordRange.isSingleLine) {
@@ -331,6 +322,7 @@ function countWhitespace(doc, startPos) {
 }
 // Add spaces to fill column
 function fillTabs(str, finalLength) {
+    // Check it item is empty
     if (finalLength === 0) {
         return "";
     }
@@ -340,15 +332,27 @@ function fillTabs(str, finalLength) {
     }
     let editor = vscode.window.activeTextEditor;
     let tabSize = 0;
-    if (editor.options.insertSpaces === false && editor.options.tabSize !== undefined) {
+    let colLength = 0;
+    let addedSpaces = 0;
+    let addedTabs = 0;
+    // Get the tab size setting of the current editor
+    if (editor.options.tabSize !== undefined) {
         tabSize = +editor.options.tabSize;
     }
-    // Abgerundete Anzahl an Tabs
-    let strLength = (str.length / tabSize) % 1 === 0 ? str.length + 1 : str.length;
-    let tabAddition = (1 - ((finalLength / tabSize) % 1)) * tabSize;
-    let numberOfTabs = Math.ceil((finalLength - strLength + tabAddition) / tabSize);
-    for (let index = 0; index < numberOfTabs; index++) {
-        str = str + "\t";
+    // Check if indentation is done with tabs or spaces
+    finalLength = (finalLength / tabSize) % 1 === 0 ? finalLength + 1 : finalLength;
+    colLength = Math.ceil(finalLength / tabSize) * tabSize;
+    addedSpaces = colLength - str.length;
+    if (editor.options.insertSpaces === true) {
+        for (let i = 0; i < addedSpaces; i++) {
+            str = str + " ";
+        }
+    }
+    else {
+        addedTabs = Math.ceil(addedSpaces / tabSize);
+        for (let e = 0; e < addedTabs; e++) {
+            str = str + "\t";
+        }
     }
     return str;
 }
