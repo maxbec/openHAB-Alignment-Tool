@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.4]
+
+### Added
+
+-    Support for space indentation in VSC.
+
 ## [1.0.0]
 
 ### Added
