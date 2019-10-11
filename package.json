@@ -8,7 +8,7 @@
 		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool",
 		"type": "git"
 	},
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"engines": {
 		"vscode": "^1.38.0"
 	},
