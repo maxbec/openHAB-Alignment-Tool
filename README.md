@@ -1,4 +1,4 @@
-# openHAB Alignment Tool README
+# openHAB Alignment Tool
 
 This extension adds support for formatting and indenting [openHAB](http://www.openhab.org) files like `*.items`, `*.things`, etc. At the moment only the `*.item`-files are supported. They can be formatted in a column style. In the future the other file types and other format-types will be added. Feel free to enter feature-requests.
 
