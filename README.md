@@ -1,20 +1,16 @@
 # openHAB Alignment Tool README
 
-This extension adds support for formatting and indenting openHAB files. At the moment only the item-files are supported.
+This extension adds support for formatting and indenting [openHAB](http://www.openhab.org) files like `*.items`, `*.things`, etc. At the moment only the `*.item`-files are supported. They can be formatted in a column style. In the future the other file types and other format-types will be added. Feel free to enter feature-requests.
 
 ## Features
 
-The tool is available via the Command-Palette. Just type cmnd+shift+p and enter openHAB Formatter. Then you get the option to format the whole file.
+The tool is available via the Command-Palette. Just type `cmnd+shift+p` and enter `openHAB Alignment Tool`. Then you get the option to format the whole file.
 
 ![formatting item gif](images/item-formatting.gif)
 
 ## Limitations
 
-At the moment only \*.item files are supported. More file-types to follow.
-
-## Requirements
-
-No Special Requirements
+At the moment only `*.item`-files are supported. More file-types will follow in the future.
 
 ## Extension Settings
 
@@ -22,10 +18,17 @@ At the moment no extension settings
 
 ## Known Issues
 
-No known issues
+See [Github Issues](https://github.com/MaxBec/openHAB-Alignment-Tool/issues) file for the details.
 
 ## Release Notes
 
-### 1.0.0
+See [CHANGELOG.md](https://github.com/openhab/openHAB-Alignment-Tool/blob/master/CHANGELOG.md) file for the details.
 
-Initial release of the openHAB Formatter in it's first version.
+----
+
+### For More Information
+
+* [openHAB Documentation](https://www.openhab.org/docs/)
+* [openHAB Community](https://community.openhab.org)
+
+**Enjoy!**
