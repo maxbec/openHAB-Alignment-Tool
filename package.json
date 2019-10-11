@@ -1,11 +1,11 @@
 {
-	"name": "oh-formatter",
-	"displayName": "openHAB Formatter",
+	"name": "oh-alignment-tool",
+	"displayName": "openHAB Alignment Tool",
 	"description": "Tool to format and indent openHAB files. At the moment only item-files can be formatted.",
 	"publisher": "maximilian-beckenbauer",
 	"icon": "images/logo.png",
 	"repository": {
-		"url": "https://github.com/MaxBec/openHAB-Formatter",
+		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool",
 		"type": "git"
 	},
 	"version": "1.0.4",
@@ -26,7 +26,7 @@
 			{
 				"command": "extension.reformat-file",
 				"title": "Reformat Item File",
-				"category": "openHAB Formatter"
+				"category": "openHAB Alignment Tool"
 			}
 		]
 	},

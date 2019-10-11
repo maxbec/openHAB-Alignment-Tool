@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.5]
+
+### Added
+
+-    Added support for tabs or spaces in front of items.
+-    Added support for group functions like OR(ON, OFF) or AVG, SUM, etc.
+
+### Changed
+
+-    Name of the app. Confusion with tool of Mark Hilbush. Sorry Mark ;)
+
 ## [1.0.4]
 
 ### Added

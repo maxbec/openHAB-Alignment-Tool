@@ -1,4 +1,4 @@
-# openHAB Formatter README
+# openHAB Alignment Tool README
 
 This extension adds support for formatting and indenting openHAB files. At the moment only the item-files are supported.
 

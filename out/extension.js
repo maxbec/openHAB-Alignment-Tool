@@ -7,13 +7,14 @@ const REGEX_COMMENT = /^\s*\/\/.*$/;
 const REGEX_START_BLOCKCOMMENT = /^\s*\/\*.*$/;
 const REGEX_END_BLOCKCOMMENT = /^.*\s*\*\/$/;
 // Regex patterns to match parts of item definition
-const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number|Player|Rollershutter|String|Switch)(:\w+)?(:\w+\((\s*\w+)(,\s*\w+)*\s*\))?/;
+const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number|Player|Rollershutter|String|Switch)(:\w+)?(:\w+)?(\(\w+,\s*\w+\))?(\(".*"\))?/;
 const REGEX_ITEM_NAME = /[a-zA-Z0-9][a-zA-Z0-9_]*/;
 const REGEX_ITEM_LABEL = /\".+?\"/;
 const REGEX_ITEM_ICON = /<.+?>/;
 const REGEX_ITEM_GROUP = /\(.+?\)/;
 const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*]/;
 const REGEX_ITEM_CHANNEL = /\{.+?\}/;
+const REGEX_NEW_LINE = /\r?\n|\r/;
 const HIGHEST_TYPE_LENGTH = 13; //Rollershutter
 // Default item values
 const DEF_ITEM_TYPE = "Type";
@@ -37,10 +38,10 @@ let isInBlockComment = false;
 function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "oh-itemizer" is now active!');
+    console.log('Congratulations, your extension "OpenHAB Alignment Tool" is now active!');
     // Reformat all items in the file
     vscode.commands.registerCommand("extension.reformat-file", () => {
-        vscode.window.showInformationMessage("File gets formatted!");
+        vscode.window.showInformationMessage("File gets aligned!");
         commandReformatFile();
     });
 }
@@ -62,6 +63,7 @@ function commandReformatFile() {
     let editor = vscode.window.activeTextEditor;
     let currentPos = editor.selection.active;
     let newPos;
+    prepareFile();
     for (let index = 0; index < doc.lineCount; index++) {
         newPos = currentPos.with(index, 0);
         editor.selection = new vscode.Selection(newPos, newPos);
@@ -136,6 +138,8 @@ function getSectionLengths() {
     let newPos = currentPos.with(currentPos.line, 0);
     editor.selection = new vscode.Selection(newPos, newPos);
     // Discover item Type
+    // Count Whitespace or tabs at the begin of the line
+    newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
     var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
     if (wordRange && wordRange.isSingleLine) {
         itemType = doc.getText(wordRange);
@@ -240,6 +244,7 @@ function reformatItem() {
         leadingWhitespaceCount = 0;
     }
     // Discover item Type
+    newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
     var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
     if (wordRange && wordRange.isSingleLine) {
         itemType = doc.getText(wordRange);
@@ -357,12 +362,56 @@ function fillTabs(str, finalLength) {
     return str;
 }
 // Return a string of 'number' spaces
-function indent(count) {
-    let spaces = "";
-    for (let i = 0; i < count; i++) {
-        spaces = spaces + " ";
+function prepareFile() {
+    // Only execute if there's an active text editor
+    if (!vscode.window.activeTextEditor) {
+        return;
     }
-    return spaces;
+    let doc = vscode.window.activeTextEditor.document;
+    let editor = vscode.window.activeTextEditor;
+    let currentPos = editor.selection.active;
+    let newPos;
+    for (let index = 0; index < doc.lineCount; index++) {
+        newPos = currentPos.with(index, 0);
+        editor.selection = new vscode.Selection(newPos, newPos);
+        // Current line must have something in it
+        let lineText = doc.lineAt(newPos.line);
+        if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
+            continue;
+        }
+        // Ignore comments
+        var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
+        var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
+        var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
+        if (comment) {
+            continue;
+        }
+        else if (blockComment && endBlockComment) {
+            isInBlockComment = false;
+            continue;
+        }
+        else if (blockComment) {
+            isInBlockComment = true;
+            continue;
+        }
+        else if (endBlockComment) {
+            isInBlockComment = false;
+            continue;
+        }
+        else if (isInBlockComment) {
+            continue;
+        }
+        // Discover item Type
+        var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
+        if (wordRange && wordRange.isSingleLine) {
+            continue;
+        }
+        else {
+            let newPosition = newPos.with(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length);
+            var newRange = new vscode.Range(newPosition.line, newPosition.character, newPosition.line + 1, newPosition.character);
+            vscode.TextEdit.delete(newRange);
+        }
+    }
 }
 // this method is called when your extension is deactivated
 function deactivate() { }
