@@ -6,6 +6,8 @@ This extension adds support for formatting and indenting openHAB files. At the m
 
 The tool is available via the Command-Palette. Just type cmnd+shift+p and enter openHAB Formatter. Then you get the option to format the whole file.
 
+![formatting item gif](images/item-formatting.gif)
+
 ## Limitations
 
 At the moment only \*.item files are supported. More file-types to follow.

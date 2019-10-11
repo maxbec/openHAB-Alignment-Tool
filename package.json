@@ -5,7 +5,7 @@
 	"publisher": "maximilian-beckenbauer",
 	"icon": "images/logo.png",
 	"repository": {
-		"url": "https://github.com/MaxBec/Itemizer",
+		"url": "https://github.com/MaxBec/openHAB-Formatter",
 		"type": "git"
 	},
 	"version": "1.0.0",
