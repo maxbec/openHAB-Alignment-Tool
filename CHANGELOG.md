@@ -1,12 +1,8 @@
-# Change Log
+# openHAB Alignment Tool Change Log
 
-All notable changes to the "oh-itemizer" extension will be documented in this file.
+All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-## [1.0.5]
+## [1.0.5] - 11.10.2019
 
 ### Added
 
@@ -17,13 +13,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 -    Name of the app. Confusion with tool of Mark Hilbush. Sorry Mark ;)
 
-## [1.0.4]
+## [1.0.4] - 11.10.2019
 
 ### Added
 
 -    Support for space indentation in VSC.
 
-## [1.0.0]
+## [1.0.0] - 11.10.2019
 
 ### Added
 

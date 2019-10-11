@@ -9,3 +9,8 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 ._*
+**/*.map
+ISSUE_TEMPLATE.md
+CONTRIBUTING.md
+LICENSE.md
+AUTHORS

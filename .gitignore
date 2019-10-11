@@ -1,1 +1,11 @@
 ._*
+out
+node_modules
+*.vsix
+*.todo
+*.zip
+**/out
+**/node_modules
+.vscode
+.vscode-test
+coverage
