@@ -15,7 +15,7 @@ const REGEX_ITEM_ICON = /<.+?>/;
 const REGEX_ITEM_GROUP = /\(.+?\)/;
 const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*]/;
 const REGEX_ITEM_CHANNEL = /\{.+?\}/;
-const REGEX_NEW_LINE = /\r?\n|\r/;
+const REGEX_NEW_LINE = /.*\n/;
 const HIGHEST_TYPE_LENGTH = 13; //Rollershutter
 
 // Default item values
@@ -37,6 +37,11 @@ let highestTagLength = 0;
 let highestChannelLength = 0;
 let isInBlockComment = false;
 
+let clearTextEdits: vscode.TextEdit[] = [];
+let textTextEdits: vscode.TextEdit[] = [];
+let clearWorkEdit = new vscode.WorkspaceEdit();
+let textWorkEdit = new vscode.WorkspaceEdit();
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -52,6 +57,12 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function commandReformatFile(): void {
+	// Clear all edits
+	clearTextEdits = [];
+	textTextEdits = [];
+	clearWorkEdit = new vscode.WorkspaceEdit();
+	textWorkEdit = new vscode.WorkspaceEdit();
+
 	// Reset maximum values
 	highestTypeLength = 0;
 	highestNameLength = 0;
@@ -66,40 +77,82 @@ function commandReformatFile(): void {
 		return;
 	}
 
+	// Basic variable definitions
 	let doc = vscode.window.activeTextEditor.document;
 	let editor = vscode.window.activeTextEditor;
 	let currentPos = editor.selection.active;
 	let newPos: vscode.Position;
 
-	prepareFile();
-
+	// Clear the file in case of line-by-line item definitions
 	for (let index = 0; index < doc.lineCount; index++) {
 		newPos = currentPos.with(index, 0);
 		editor.selection = new vscode.Selection(newPos, newPos);
 
-		// Get the section lengths of each line with an item in it.
-		getSectionLengths();
+		// Current line must have something in it
+		let lineText = doc.lineAt(newPos.line);
+		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
+			continue;
+		}
+		// Ignore comments
+		var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
+		var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
+		var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
+
+		if (comment) {
+			continue;
+		} else if (blockComment && endBlockComment) {
+			isInBlockComment = false;
+			continue;
+		} else if (blockComment) {
+			isInBlockComment = true;
+			continue;
+		} else if (endBlockComment) {
+			isInBlockComment = false;
+			continue;
+		} else if (isInBlockComment) {
+			continue;
+		}
+
+		// Discover item Type
+		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
+		if (wordRange && wordRange.isSingleLine) {
+			continue;
+		} else {
+			let lengthFirstRow = doc.lineAt(newPos.line - 1).text.length;
+			let newRange = new vscode.Range(newPos.line - 1, lengthFirstRow, newPos.line, 0);
+
+			clearTextEdits.push(vscode.TextEdit.delete(newRange));
+		}
 	}
 
-	editor
-		.edit(builder => {
-			for (let index = 0; index < doc.lineCount; index++) {
-				newPos = currentPos.with(index, 0);
-				editor.selection = new vscode.Selection(newPos, newPos);
-				let reformattedItem = reformatItem();
-				if (reformattedItem !== "") {
-					let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(newPos.line).text.length));
-					builder.replace(selection, reformattedItem);
-				}
+	async function applyEdit() {
+		clearWorkEdit.set(doc.uri, clearTextEdits);
+		await vscode.workspace.applyEdit(clearWorkEdit);
+
+		for (let index = 0; index < doc.lineCount; index++) {
+			newPos = currentPos.with(index, 0);
+			editor.selection = new vscode.Selection(newPos, newPos);
+
+			// Get the section lengths of each line with an item in it.
+			getSectionLengths();
+		}
+
+		for (let index = 0; index < doc.lineCount; index++) {
+			newPos = currentPos.with(index, 0);
+			editor.selection = new vscode.Selection(newPos, newPos);
+			let reformattedItem = reformatItem();
+			if (reformattedItem !== "") {
+				let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(newPos.line).text.length));
+				textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
 			}
-		})
-		.then(success => {
-			let pos = new vscode.Position(0, 0);
-			editor.selection = new vscode.Selection(pos, pos);
-		})
-		.then(undefined, err => {
-			console.error(err);
-		});
+		}
+
+		textWorkEdit.set(doc.uri, textTextEdits);
+		await vscode.workspace.applyEdit(textWorkEdit);
+	}
+
+	applyEdit();
 }
 
 function getSectionLengths() {
@@ -393,58 +446,6 @@ function fillTabs(str: string, finalLength: number): string {
 	}
 
 	return str;
-}
-// Return a string of 'number' spaces
-function prepareFile() {
-	// Only execute if there's an active text editor
-	if (!vscode.window.activeTextEditor) {
-		return;
-	}
-
-	let doc = vscode.window.activeTextEditor.document;
-	let editor = vscode.window.activeTextEditor;
-	let currentPos = editor.selection.active;
-	let newPos: vscode.Position;
-
-	for (let index = 0; index < doc.lineCount; index++) {
-		newPos = currentPos.with(index, 0);
-		editor.selection = new vscode.Selection(newPos, newPos);
-
-		// Current line must have something in it
-		let lineText = doc.lineAt(newPos.line);
-		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
-			continue;
-		}
-		// Ignore comments
-		var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
-		var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
-		var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
-
-		if (comment) {
-			continue;
-		} else if (blockComment && endBlockComment) {
-			isInBlockComment = false;
-			continue;
-		} else if (blockComment) {
-			isInBlockComment = true;
-			continue;
-		} else if (endBlockComment) {
-			isInBlockComment = false;
-			continue;
-		} else if (isInBlockComment) {
-			continue;
-		}
-
-		// Discover item Type
-		var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
-		if (wordRange && wordRange.isSingleLine) {
-			continue;
-		} else {
-			let newPosition = newPos.with(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length);
-			var newRange = new vscode.Range(newPosition.line, newPosition.character, newPosition.line + 1, newPosition.character);
-			vscode.TextEdit.delete(newRange);
-		}
-	}
 }
 
 // this method is called when your extension is deactivated

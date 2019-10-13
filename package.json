@@ -8,10 +8,15 @@
 		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool",
 		"type": "git"
 	},
+	"bugs": {
+		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool/issues",
+		"email": "max.bec92@gmail.com"
+	},
 	"version": "1.0.5",
 	"engines": {
 		"vscode": "^1.38.0"
 	},
+	"license": "https://github.com/MaxBec/openHAB-Alignment-Tool/blob/master/LICENSE",
 	"categories": [
 		"Other",
 		"Formatters",
