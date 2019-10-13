@@ -2,11 +2,17 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.0.6] - 13.10.2019
+
+### Added
+
+-    Added support for multine (line-by-line) item-definition files. They will be decoded and written into one line for the column formatting style. [#2]
+
 ## [1.0.5] - 11.10.2019
 
 ### Added
 
--    Added support for tabs or spaces in front of items.
+-    Added support for tabs or spaces in front of items. [#1]
 -    Added support for group functions like OR(ON, OFF) or AVG, SUM, etc.
 
 ### Changed
