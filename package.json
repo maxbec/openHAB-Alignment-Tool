@@ -12,7 +12,7 @@
 		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool/issues",
 		"email": "max.bec92@gmail.com"
 	},
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"engines": {
 		"vscode": "^1.38.0"
 	},
