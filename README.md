@@ -22,13 +22,13 @@ See [Github Issues](https://github.com/MaxBec/openHAB-Alignment-Tool/issues) fil
 
 ## Release Notes
 
-See [CHANGELOG.md](https://github.com/openhab/openHAB-Alignment-Tool/blob/master/CHANGELOG.md) file for the details.
+See [CHANGELOG.md](https://github.com/MaxBec/openHAB-Alignment-Tool/blob/master/CHANGELOG.md) file for the details.
 
-----
+---
 
 ### For More Information
 
-* [openHAB Documentation](https://www.openhab.org/docs/)
-* [openHAB Community](https://community.openhab.org)
+-    [openHAB Documentation](https://www.openhab.org/docs/)
+-    [openHAB Community](https://community.openhab.org)
 
 **Enjoy!**
