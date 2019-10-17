@@ -2,6 +2,16 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.0.7] - 18.10.2019
+
+### Added
+
+-    Added support for cmnd/ctrl+a+l keybinding.
+
+### Changed
+
+-    Changed internal funciton name. Conflict with formatting extension of Mark Hilbush.
+
 ## [1.0.6] - 13.10.2019
 
 ### Added
