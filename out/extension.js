@@ -16,6 +16,7 @@ const REGEX_COMMENT = /^\s*\/\/.*$/;
 const REGEX_START_BLOCKCOMMENT = /^\s*\/\*.*$/;
 const REGEX_END_BLOCKCOMMENT = /^.*\s*\*\/$/;
 // Regex patterns to match parts of item definition
+// Credits to Mark Hilbush
 const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number|Player|Rollershutter|String|Switch)(:\w+)?(:\w+)?(\(\w+,\s*\w+\))?(\(".*"\))?/;
 const REGEX_ITEM_NAME = /[a-zA-Z0-9][a-zA-Z0-9_]*/;
 const REGEX_ITEM_LABEL = /\".+?\"/;
@@ -53,7 +54,7 @@ function activate(context) {
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "OpenHAB Alignment Tool" is now active!');
     // Reformat all items in the file
-    vscode.commands.registerCommand("extension.reformat-file", () => {
+    vscode.commands.registerCommand("extension.align-file", () => {
         vscode.window.showInformationMessage("File gets aligned!");
         commandReformatFile();
     });

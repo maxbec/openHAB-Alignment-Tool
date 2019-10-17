@@ -1,9 +1,24 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"description": "Tool to format and indent openHAB files. At the moment only item-files can be formatted.",
+	"version": "1.0.6",
 	"publisher": "maximilian-beckenbauer",
+	"description": "Tool to format and indent openHAB files. At the moment only item-files can be formatted.",
+	"author": {
+		"name": "Maximilian Beckenbauer",
+		"email": "max.bec92@gmail.com",
+		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool"
+	},
+	"categories": [
+		"Other",
+		"Formatters",
+		"Linters"
+	],
 	"icon": "images/logo.png",
+	"galleryBanner": {
+		"color": "#dbdbdb",
+		"theme": "dark"
+	},
 	"repository": {
 		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool",
 		"type": "git"
@@ -12,26 +27,28 @@
 		"url": "https://github.com/MaxBec/openHAB-Alignment-Tool/issues",
 		"email": "max.bec92@gmail.com"
 	},
-	"version": "1.0.6",
 	"engines": {
 		"vscode": "^1.38.0"
 	},
 	"license": "https://github.com/MaxBec/openHAB-Alignment-Tool/blob/master/LICENSE",
-	"categories": [
-		"Other",
-		"Formatters",
-		"Linters"
-	],
 	"activationEvents": [
-		"onCommand:extension.reformat-file"
+		"onCommand:extension.align-file"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.reformat-file",
+				"command": "extension.align-file",
 				"title": "Reformat Item File",
 				"category": "openHAB Alignment Tool"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "extension.align-file",
+				"key": "ctrl+a+l",
+				"mac": "cmd+a+l",
+				"when": "editorTextFocus"
 			}
 		]
 	},
