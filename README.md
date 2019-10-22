@@ -10,7 +10,8 @@ The tool is available via the Command-Palette. Just type `cmnd+shift+p` and ente
 
 ## Limitations
 
-At the moment only `*.item`-files are supported. More file-types will follow in the future.
+-    Only `*.item`-files are supported. More file-types will follow in the future.
+-    Only column-style formatting is supported. More styles will follow in the future.
 
 ## Extension Settings
 
