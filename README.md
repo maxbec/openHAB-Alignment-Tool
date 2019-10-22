@@ -1,5 +1,7 @@
 # openHAB Alignment Tool
 
+[![Build Status](https://maxbec.visualstudio.com/openHAB%20Alignment%20Tool/_apis/build/status/MaxBec.openHAB-Alignment-Tool?branchName=master)](https://maxbec.visualstudio.com/openHAB%20Alignment%20Tool/_build/latest?definitionId=1&branchName=master)
+
 This extension adds support for formatting and indenting [openHAB](http://www.openhab.org) files like `*.items`, `*.things`, etc. At the moment only the `*.item`-files are supported. They can be formatted in a column style. In the future the other file types and other format-types will be added. Feel free to enter feature-requests.
 
 ## Features
