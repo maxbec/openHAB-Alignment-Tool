@@ -153,6 +153,7 @@ function commandReformatFile(): void {
 		await vscode.workspace.applyEdit(textWorkEdit);
 	}
 
+	// Apply all TextEdits
 	applyEdit();
 }
 
