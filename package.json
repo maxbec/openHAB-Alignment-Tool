@@ -1,7 +1,7 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"publisher": "max-beckenbauer",
 	"contributors": [
 		"Mark Hilbush"
