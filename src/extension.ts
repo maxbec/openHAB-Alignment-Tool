@@ -3,6 +3,8 @@
  *
  * @todo Complete Header description and tags.
  * @author Max Beckenbauer
+ *
+ * Credits to Mark Hilbush and his openHAB Formatter extension.
  */
 
 /**----------------------------------------------------------------------------------------------------------

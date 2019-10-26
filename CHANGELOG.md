@@ -2,6 +2,20 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.1.2] - 26.10.2019
+
+### Added
+
+-    Added support for the multiline formatting style of [Mark Hilbush's Extension](https://github.com/mhilbush/openhab-formatter). Credits to Mark for a great extension and functionality. After having a chat about our extensions we joined forces and grouped them together in one extension.
+-    Added style configuration option
+-    Added option to preserve existing whitespaces in front of items
+-    Added option to insert new lines after each item
+
+### Changed
+
+-    Changed some VSC Marketplace parameters
+-    Changed internal function and method structure to add some performance.
+
 ## [1.0.7] - 18.10.2019
 
 ### Added
@@ -10,13 +24,13 @@ All notable changes to the openHAB Alignment Tool extension will be documented i
 
 ### Changed
 
--    Changed internal funciton name. Conflict with formatting extension of Mark Hilbush.
+-    Changed internal function name. Conflict with formatting extension of Mark Hilbush.
 
 ## [1.0.6] - 13.10.2019
 
 ### Added
 
--    Added support for multine (line-by-line) item-definition files. They will be decoded and written into one line for the column formatting style. [#2]
+-    Added support for multiline (line-by-line) item-definition files. They will be decoded and written into one line for the column formatting style. [#2]
 
 ## [1.0.5] - 11.10.2019
 
