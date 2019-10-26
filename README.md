@@ -17,7 +17,7 @@ The tool is available via the Command-Palette. Just type `cmnd+shift+p` and ente
 
 ## Extension Settings
 
-At the moment no extension settings
+Add extension settings here.
 
 ## Known Issues
 
