@@ -1,14 +1,21 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
-import { isNumber } from "util";
+/**
+ * openHAB Alignment Tool
+ *
+ * @todo Complete Header description and tags.
+ * @author Max Beckenbauer
+ */
 
+/**----------------------------------------------------------------------------------------------------------
+ * HEADER SECTION
+ *---------------------------------------------------------------------------------------------------------*/
+import * as vscode from "vscode";
+
+// Regex patterns to match comment sections
 const REGEX_COMMENT = /^\s*\/\/.*$/;
 const REGEX_START_BLOCKCOMMENT = /^\s*\/\*.*$/;
 const REGEX_END_BLOCKCOMMENT = /^.*\s*\*\/$/;
 
 // Regex patterns to match parts of item definition
-// Credits to Mark Hilbush
 const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number|Player|Rollershutter|String|Switch)(:\w+)?(:\w+)?(\(\w+,\s*\w+\))?(\(".*"\))?/;
 const REGEX_ITEM_NAME = /[a-zA-Z0-9][a-zA-Z0-9_]*/;
 const REGEX_ITEM_LABEL = /\".+?\"/;
@@ -16,8 +23,6 @@ const REGEX_ITEM_ICON = /<.+?>/;
 const REGEX_ITEM_GROUP = /\(.+?\)/;
 const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*]/;
 const REGEX_ITEM_CHANNEL = /\{.+?\}/;
-const REGEX_NEW_LINE = /.*\n/;
-const HIGHEST_TYPE_LENGTH = 13; //Rollershutter
 
 // Default item values
 const DEF_ITEM_TYPE = "Type";
@@ -43,21 +48,132 @@ let textTextEdits: vscode.TextEdit[] = [];
 let clearWorkEdit = new vscode.WorkspaceEdit();
 let textWorkEdit = new vscode.WorkspaceEdit();
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+/**----------------------------------------------------------------------------------------------------------
+ * COMMAND SECTION
+ *---------------------------------------------------------------------------------------------------------*/
+/**
+ * This method is called when your extension is activated.
+ * Your extension is activated the very first time the command is executed.
+ *
+ * @param context
+ */
 export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "OpenHAB Alignment Tool" is now active!');
 
+	// Insert a generic item
+	vscode.commands.registerCommand("extension.insert-item-generic", () => {
+		commandInsertNewGenericItem();
+	});
+	// Insert a Switch item
+	vscode.commands.registerCommand("extension.insert-item-switch", () => {
+		commandInsertNewSwitchItem();
+	});
+	// Insert a Dimmer item
+	vscode.commands.registerCommand("extension.insert-item-dimmer", () => {
+		commandInsertNewDimmerItem();
+	});
+	// Insert a String item
+	vscode.commands.registerCommand("extension.insert-item-string", () => {
+		commandInsertNewStringItem();
+	});
+	// Insert a Number item
+	vscode.commands.registerCommand("extension.insert-item-number", () => {
+		commandInsertNewNumberItem();
+	});
+	// Insert a DateTime item
+	vscode.commands.registerCommand("extension.insert-item-datetime", () => {
+		commandInsertNewDateTimeItem();
+	});
+	// Reformat an existing item
+	vscode.commands.registerCommand("extension.reformat-item", () => {
+		commandReformatItem();
+	});
 	// Reformat all items in the file
-	vscode.commands.registerCommand("extension.align-file", () => {
-		vscode.window.showInformationMessage("File gets aligned!");
+	vscode.commands.registerCommand("extension.reformat-file", () => {
 		commandReformatFile();
 	});
 }
 
+// Add new generic item
+function commandInsertNewGenericItem(): void {
+	insertItem(DEF_ITEM_TYPE, DEF_ITEM_NAME, DEF_ITEM_LABEL, DEF_ITEM_ICON, DEF_ITEM_GROUP, DEF_ITEM_TAG, DEF_ITEM_CHANNEL);
+}
+
+// Add new Switch item
+function commandInsertNewSwitchItem(): void {
+	insertItem("Switch", "_Switch", '"Label [%s]"', "<switch>", DEF_ITEM_GROUP, '["Switch"]', DEF_ITEM_CHANNEL);
+}
+
+// Add new Dimmer item
+function commandInsertNewDimmerItem(): void {
+	insertItem("Dimmer", "_Dimmer", '"Label [%s]"', "<dimmer>", DEF_ITEM_GROUP, '["Dimmer"]', DEF_ITEM_CHANNEL);
+}
+
+// Add new String item
+function commandInsertNewStringItem(): void {
+	insertItem("String", DEF_ITEM_NAME, '"Label [%s]"', "<text>", DEF_ITEM_GROUP, DEF_ITEM_TAG, DEF_ITEM_CHANNEL);
+}
+
+// Add new Number item
+function commandInsertNewNumberItem(): void {
+	insertItem("Number", DEF_ITEM_NAME, '"Label [%.0f]"', "<none>", DEF_ITEM_GROUP, DEF_ITEM_TAG, DEF_ITEM_CHANNEL);
+}
+
+// Add new DateTime item
+function commandInsertNewDateTimeItem(): void {
+	insertItem("DateTime", DEF_ITEM_NAME, '"Label [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"', "<time>", DEF_ITEM_GROUP, DEF_ITEM_TAG, DEF_ITEM_CHANNEL);
+}
+
+/**
+ * Format an existing item definition
+ */
+function commandReformatItem(): void {
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+
+	// Define the basic vscode variables
+	let doc = vscode.window.activeTextEditor.document;
+	let editor = vscode.window.activeTextEditor;
+	let currentPos = editor.selection.active;
+	let newPos = currentPos.with(currentPos.line, 0);
+
+	// Clear all edits
+	clearTextEdits = [];
+	textTextEdits = [];
+	clearWorkEdit = new vscode.WorkspaceEdit();
+	textWorkEdit = new vscode.WorkspaceEdit();
+
+	// Reformat the Item in the selected line of the TextEditor and save it in the WorkspaceEdit
+	let reformattedItem = reformatItem();
+	if (reformattedItem !== "") {
+		let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(currentPos.line).text.length));
+		textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
+		textWorkEdit.set(doc.uri, textTextEdits);
+	}
+
+	// Apply all edits on the code
+	applyTextEdits();
+}
+
+/**
+ * Reformat the current file with the style selected in the settings
+ */
 function commandReformatFile(): void {
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+
+	// Define the basic vscode variables
+	let doc = vscode.window.activeTextEditor.document;
+	let editor = vscode.window.activeTextEditor;
+	let currentPos = editor.selection.active;
+	let newPos: vscode.Position;
+
 	// Clear all edits
 	clearTextEdits = [];
 	textTextEdits = [];
@@ -73,33 +189,78 @@ function commandReformatFile(): void {
 	highestTagLength = 0;
 	highestChannelLength = 0;
 
+	// Clean the file and prepare it for formatting
+	cleanAndPrepareFile();
+
+	// Get the section lengths of each line with an item in it.
+	getAllItemPartLengths();
+
+	// Reformat each item line
+	for (let index = 0; index < doc.lineCount; index++) {
+		newPos = currentPos.with(index, 0);
+		editor.selection = new vscode.Selection(newPos, newPos);
+		let reformattedItem = reformatItem();
+		if (reformattedItem !== "") {
+			let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(newPos.line).text.length));
+			textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
+		}
+	}
+
+	// Apply all clean and formatting Edits
+	applyTextEdits();
+}
+
+/**----------------------------------------------------------------------------------------------------------
+ * HELPER FUNCTIONS SECTION
+ *---------------------------------------------------------------------------------------------------------*/
+/**
+ * Clean file and prepare it for formatting.
+ * Cleans all unnecessary lines, tabs, spaces, etc.
+ */
+function cleanAndPrepareFile() {
 	// Only execute if there's an active text editor
 	if (!vscode.window.activeTextEditor) {
 		return;
 	}
 
-	// Basic variable definitions
+	// Define the basic vscode variables
 	let doc = vscode.window.activeTextEditor.document;
 	let editor = vscode.window.activeTextEditor;
 	let currentPos = editor.selection.active;
 	let newPos: vscode.Position;
 
+	// Clear all edits
+	clearTextEdits = [];
+	clearWorkEdit = new vscode.WorkspaceEdit();
+
+	// Reset maximum values
+	highestTypeLength = 0;
+	highestNameLength = 0;
+	highestLabelLength = 0;
+	highestIconLength = 0;
+	highestGroupLength = 0;
+	highestTagLength = 0;
+	highestChannelLength = 0;
+
+	// Reset Block Comment Boolean
+	isInBlockComment = false;
+
 	// Clear the file in case of line-by-line item definitions
 	for (let index = 0; index < doc.lineCount; index++) {
+		// Get Position at the beginning of the current line and start a selection
 		newPos = currentPos.with(index, 0);
 		editor.selection = new vscode.Selection(newPos, newPos);
 
-		// Current line must have something in it
+		// Get Text of current line and check if there is a comment in it
 		let lineText = doc.lineAt(newPos.line);
-		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
-			continue;
-		}
-		// Ignore comments
 		var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
 		var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
 		var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
 
-		if (comment) {
+		// If line is empty or contains a comment continue to the next line
+		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
+			continue;
+		} else if (comment) {
 			continue;
 		} else if (blockComment && endBlockComment) {
 			isInBlockComment = false;
@@ -115,69 +276,248 @@ function commandReformatFile(): void {
 		}
 
 		// Discover item Type
-		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-		var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
+		var wordRange = doc.getWordRangeAtPosition(newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos)), REGEX_ITEM_TYPE);
+
+		// Check if there is an item type at the beginning of each line
 		if (wordRange && wordRange.isSingleLine) {
 			continue;
 		} else {
-			let lengthFirstRow = doc.lineAt(newPos.line - 1).text.length;
-			let newRange = new vscode.Range(newPos.line - 1, lengthFirstRow, newPos.line, 0);
-
+			// Select the \n mark at the end of the line => Delete all new lines in item definitions
+			let newRange = new vscode.Range(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length, newPos.line, 0);
 			clearTextEdits.push(vscode.TextEdit.delete(newRange));
 		}
 	}
 
-	async function applyEdit() {
-		clearWorkEdit.set(doc.uri, clearTextEdits);
-		await vscode.workspace.applyEdit(clearWorkEdit);
-
-		for (let index = 0; index < doc.lineCount; index++) {
-			newPos = currentPos.with(index, 0);
-			editor.selection = new vscode.Selection(newPos, newPos);
-
-			// Get the section lengths of each line with an item in it.
-			getSectionLengths();
-		}
-
-		for (let index = 0; index < doc.lineCount; index++) {
-			newPos = currentPos.with(index, 0);
-			editor.selection = new vscode.Selection(newPos, newPos);
-			let reformattedItem = reformatItem();
-			if (reformattedItem !== "") {
-				let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(newPos.line).text.length));
-				textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
-			}
-		}
-
-		textWorkEdit.set(doc.uri, textTextEdits);
-		await vscode.workspace.applyEdit(textWorkEdit);
-	}
-
-	// Apply all TextEdits
-	applyEdit();
+	// Apply all clean edits
+	applyCleanEdits();
 }
 
-function getSectionLengths() {
+/**
+ * Apply the clean and prepare edits
+ */
+async function applyCleanEdits() {
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+
+	// Define the basic vscode variables
+	let doc = vscode.window.activeTextEditor.document;
+
+	// First apply the clear and prepare edits
+	clearWorkEdit.set(doc.uri, clearTextEdits);
+	await vscode.workspace.applyEdit(clearWorkEdit);
+}
+
+/**
+ * Applies all Edits on the current TextEditor.
+ */
+async function applyTextEdits() {
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+
+	// Define the basic vscode variables
+	let doc = vscode.window.activeTextEditor.document;
+
+	// Then apply the formatting edits
+	textWorkEdit.set(doc.uri, textTextEdits);
+	await vscode.workspace.applyEdit(textWorkEdit);
+}
+
+/**
+ * Calculate the length of all item parts. And search for the longest length for each item part.
+ */
+function getAllItemPartLengths() {
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+
+	// Define the basic vscode variables
+	let doc = vscode.window.activeTextEditor.document;
+	let editor = vscode.window.activeTextEditor;
+	let currentPos = editor.selection.active;
+	let newPos: vscode.Position;
+
+	// Reset maximum values
+	highestTypeLength = 0;
+	highestNameLength = 0;
+	highestLabelLength = 0;
+	highestIconLength = 0;
+	highestGroupLength = 0;
+	highestTagLength = 0;
+	highestChannelLength = 0;
+
+	// Reset Block Comment Boolean
+	isInBlockComment = false;
+
+	// Clear the file in case of line-by-line item definitions
+	for (let index = 0; index < doc.lineCount; index++) {
+		// Get Position at the beginning of the current line and start a selection
+		newPos = currentPos.with(index, 0);
+		editor.selection = new vscode.Selection(newPos, newPos);
+
+		// Get Text of current line and check if there is a comment in it
+		let lineText = doc.lineAt(newPos.line);
+		var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
+		var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
+		var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
+
+		// If line is empty or contains a comment continue to the next line
+		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
+			continue;
+		} else if (comment) {
+			continue;
+		} else if (blockComment && endBlockComment) {
+			isInBlockComment = false;
+			continue;
+		} else if (blockComment) {
+			isInBlockComment = true;
+			continue;
+		} else if (endBlockComment) {
+			isInBlockComment = false;
+			continue;
+		} else if (isInBlockComment) {
+			continue;
+		}
+
+		// Default these to empty. They will be changed
+		// if they exist in the item definition
+		let itemType = "";
+		let itemName = "";
+		let itemLabel = "";
+		let itemIcon = "";
+		let itemGroup = "";
+		let itemTag = "";
+		let itemChannel = "";
+
+		// Discover item Type
+		// Count Whitespace or tabs at the begin of the line
+		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
+		if (wordRange && wordRange.isSingleLine) {
+			itemType = doc.getText(wordRange);
+			highestTypeLength = itemType.length > highestTypeLength ? itemType.length : highestTypeLength;
+			// FIXME console.log("Matched type: " + itemType);
+			newPos = newPos.with(newPos.line, newPos.character + itemType.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+			// Discover item Name
+			var itemNameRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_NAME);
+			if (itemNameRange && itemNameRange.isSingleLine) {
+				itemName = doc.getText(itemNameRange);
+				highestNameLength = itemName.length > highestNameLength ? itemName.length : highestNameLength;
+				// FIXME console.log("Matched name: " + itemName);
+				newPos = newPos.with(newPos.line, newPos.character + itemName.length);
+				newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+			}
+		}
+		// Must have a type and name to continue
+		if (itemType.length === 0 || itemName.length === 0) {
+			return "";
+		}
+		// Discover item Label
+		let itemLabelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_LABEL);
+		if (itemLabelRange && itemLabelRange.isSingleLine) {
+			itemLabel = doc.getText(itemLabelRange);
+			highestLabelLength = itemLabel.length > highestLabelLength ? itemLabel.length : highestLabelLength;
+			//console.log("Label: " + itemLabel);
+			newPos = newPos.with(newPos.line, newPos.character + itemLabel.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Icon
+		let itemIconRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_ICON);
+		if (itemIconRange && itemIconRange.isSingleLine) {
+			itemIcon = doc.getText(itemIconRange);
+			highestIconLength = itemIcon.length > highestIconLength ? itemIcon.length : highestIconLength;
+			newPos = newPos.with(newPos.line, newPos.character + itemIcon.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Group
+		let itemGroupRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_GROUP);
+		if (itemGroupRange && itemGroupRange.isSingleLine) {
+			itemGroup = doc.getText(itemGroupRange);
+			highestGroupLength = itemGroup.length > highestGroupLength ? itemGroup.length : highestGroupLength;
+			newPos = newPos.with(newPos.line, newPos.character + itemGroup.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Tag
+		let itemTagRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TAG);
+		if (itemTagRange && itemTagRange.isSingleLine) {
+			itemTag = doc.getText(itemTagRange);
+			highestTagLength = itemTag.length > highestTagLength ? itemTag.length : highestTagLength;
+			//console.log("Tag: " + itemTag);
+			newPos = newPos.with(newPos.line, newPos.character + itemTag.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Channel
+		let itemChannelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_CHANNEL);
+		if (itemChannelRange && itemChannelRange.isSingleLine) {
+			itemChannel = doc.getText(itemChannelRange);
+			highestChannelLength = itemChannel.length > highestChannelLength ? itemChannel.length : highestChannelLength;
+			newPos = newPos.with(newPos.line, newPos.character + itemChannel.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+	}
+}
+
+/**
+ * Insert a new item whose parts are defined by the passed arguments
+ *
+ * @param type
+ * @param name
+ * @param label
+ * @param icon
+ * @param group
+ * @param tag
+ * @param channel
+ */
+function insertItem(type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string): void {
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+	// Go to beginning of the line, then get an empty range
+	let editor = vscode.window.activeTextEditor;
+	let newPos = new vscode.Position(editor.selection.active.line, 0);
+	editor.selection = new vscode.Selection(newPos, newPos);
+	let range = new vscode.Range(newPos, newPos.with(newPos.line, 0));
+
+	let formattedItem = formatItem(type, name, label, icon, group, tag, channel, 0);
+
+	let selection = range;
+	editor.edit(builder => {
+		builder.replace(selection, formattedItem);
+	});
+	editor.selection = new vscode.Selection(newPos, newPos);
+}
+
+/**
+ * Reformat one single item (one line)
+ */
+function reformatItem(): string {
 	// Only execute if there's an active text editor
 	if (!vscode.window.activeTextEditor) {
 		return "";
 	}
 
+	// Define the basic vscode variables
 	let doc = vscode.window.activeTextEditor.document;
 	let editor = vscode.window.activeTextEditor;
 	let currentPos = editor.selection.active;
+	let newPos = currentPos.with(currentPos.line, 0);
 
-	// Current line must have something in it
-	let lineText = doc.lineAt(currentPos.line);
+	// Get Text of current line and check if there is a comment in it
+	let lineText = doc.lineAt(newPos.line);
+	var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
+	var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
+	var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
+
+	// If line is empty or contains a comment continue to the next line
 	if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
 		return "";
-	}
-	// Ignore comments
-	var comment = doc.getWordRangeAtPosition(currentPos.with(currentPos.line, 0), REGEX_COMMENT);
-	var blockComment = doc.getWordRangeAtPosition(currentPos.with(currentPos.line, 0), REGEX_START_BLOCKCOMMENT);
-	var endBlockComment = doc.getWordRangeAtPosition(currentPos.with(currentPos.line, 0), REGEX_END_BLOCKCOMMENT);
-
-	if (comment) {
+	} else if (comment) {
 		return "";
 	} else if (blockComment && endBlockComment) {
 		isInBlockComment = false;
@@ -202,114 +542,11 @@ function getSectionLengths() {
 	let itemTag = "";
 	let itemChannel = "";
 
-	// Position at start of line and get a range for the entire line
-	let newPos = currentPos.with(currentPos.line, 0);
-	editor.selection = new vscode.Selection(newPos, newPos);
-
-	// Discover item Type
-	// Count Whitespace or tabs at the begin of the line
-	newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-	var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
-	if (wordRange && wordRange.isSingleLine) {
-		itemType = doc.getText(wordRange);
-		highestTypeLength = itemType.length > highestTypeLength ? itemType.length : highestTypeLength;
-		// FIXME console.log("Matched type: " + itemType);
-		newPos = newPos.with(newPos.line, newPos.character + itemType.length);
-		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-		// Discover item Name
-		var itemNameRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_NAME);
-		if (itemNameRange && itemNameRange.isSingleLine) {
-			itemName = doc.getText(itemNameRange);
-			highestNameLength = itemName.length > highestNameLength ? itemName.length : highestNameLength;
-			// FIXME console.log("Matched name: " + itemName);
-			newPos = newPos.with(newPos.line, newPos.character + itemName.length);
-			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-		}
-	}
-	// Must have a type and name to continue
-	if (itemType.length === 0 || itemName.length === 0) {
-		return "";
-	}
-	// Discover item Label
-	let itemLabelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_LABEL);
-	if (itemLabelRange && itemLabelRange.isSingleLine) {
-		itemLabel = doc.getText(itemLabelRange);
-		highestLabelLength = itemLabel.length > highestLabelLength ? itemLabel.length : highestLabelLength;
-		//console.log("Label: " + itemLabel);
-		newPos = newPos.with(newPos.line, newPos.character + itemLabel.length);
-		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-	}
-	// Discover item Icon
-	let itemIconRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_ICON);
-	if (itemIconRange && itemIconRange.isSingleLine) {
-		itemIcon = doc.getText(itemIconRange);
-		highestIconLength = itemIcon.length > highestIconLength ? itemIcon.length : highestIconLength;
-		newPos = newPos.with(newPos.line, newPos.character + itemIcon.length);
-		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-	}
-	// Discover item Group
-	let itemGroupRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_GROUP);
-	if (itemGroupRange && itemGroupRange.isSingleLine) {
-		itemGroup = doc.getText(itemGroupRange);
-		highestGroupLength = itemGroup.length > highestGroupLength ? itemGroup.length : highestGroupLength;
-		newPos = newPos.with(newPos.line, newPos.character + itemGroup.length);
-		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-	}
-	// Discover item Tag
-	let itemTagRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TAG);
-	if (itemTagRange && itemTagRange.isSingleLine) {
-		itemTag = doc.getText(itemTagRange);
-		highestTagLength = itemTag.length > highestTagLength ? itemTag.length : highestTagLength;
-		//console.log("Tag: " + itemTag);
-		newPos = newPos.with(newPos.line, newPos.character + itemTag.length);
-		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-	}
-	// Discover item Channel
-	let itemChannelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_CHANNEL);
-	if (itemChannelRange && itemChannelRange.isSingleLine) {
-		itemChannel = doc.getText(itemChannelRange);
-		highestChannelLength = itemChannel.length > highestChannelLength ? itemChannel.length : highestChannelLength;
-		newPos = newPos.with(newPos.line, newPos.character + itemChannel.length);
-		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-	}
-}
-
-function reformatItem(): string {
-	// Only execute if there's an active text editor
-	if (!vscode.window.activeTextEditor) {
-		return "";
-	}
-
-	let doc = vscode.window.activeTextEditor.document;
-	let editor = vscode.window.activeTextEditor;
-	let currentPos = editor.selection.active;
-
-	// Current line must have something in it
-	let lineText = doc.lineAt(currentPos.line);
-	if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
-		return "";
-	}
-	// Ignore comments
-	var comment = doc.getWordRangeAtPosition(currentPos.with(currentPos.line, 0), REGEX_COMMENT);
-	if (comment) {
-		return "";
-	}
-
-	// Default these to empty. They will be changed
-	// if they exist in the item definition
-	let itemType = "";
-	let itemName = "";
-	let itemLabel = "";
-	let itemIcon = "";
-	let itemGroup = "";
-	let itemTag = "";
-	let itemChannel = "";
-
-	let config = vscode.workspace.getConfiguration("oh-itemizer");
+	// Get the format configuration settings
+	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
 	let preserveWhitespace = config.preserveWhitespace;
 
 	// Position at start of line and get a range for the entire line
-	let newPos = currentPos.with(currentPos.line, 0);
 	editor.selection = new vscode.Selection(newPos, newPos);
 
 	// Move to after the whitespace
@@ -384,24 +621,57 @@ function reformatItem(): string {
 	return formatItem(itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, leadingWhitespaceCount);
 }
 
+/**
+ * Helper function which creates an item out of all single parts.
+ *
+ * @param type
+ * @param name
+ * @param label
+ * @param icon
+ * @param group
+ * @param tag
+ * @param channel
+ * @param leadingWhitespaceCount
+ */
 function formatItem(type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string, leadingWhitespaceCount: number): string {
-	let newType = fillTabs(type, highestTypeLength);
-	let newName = fillTabs(name, highestNameLength);
-	let newLabel = fillTabs(label, highestLabelLength);
-	let newIcon = fillTabs(icon, highestIconLength);
-	let newGroup = fillTabs(group, highestGroupLength);
-	let newTag = fillTabs(tag, highestTagLength);
+	// Get the format configuration settings
+	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
+	let formatStyle = config.formatStyle;
 
-	for (let index = 0; index < leadingWhitespaceCount; index++) {
-		newType = "\t" + newType;
+	// Check for the formatting style in the user configuration
+	if (formatStyle === "Column") {
+		// Fill the required amount of tabs after each item part. For Column Style Formatting
+		let newType = fillTabs(type, highestTypeLength);
+		let newName = fillTabs(name, highestNameLength);
+		let newLabel = fillTabs(label, highestLabelLength);
+		let newIcon = fillTabs(icon, highestIconLength);
+		let newGroup = fillTabs(group, highestGroupLength);
+		let newTag = fillTabs(tag, highestTagLength);
+
+		// Add the leading whitespace (for group and subgroups)
+		for (let index = 0; index < leadingWhitespaceCount; index++) {
+			newType = "\t" + newType;
+		}
+
+		// Build the formatted item and return it
+		let formattedItem = newType + newName + newLabel + newIcon + newGroup + newTag + channel;
+		return formattedItem;
+	} else if (formatStyle === "Multiline") {
+		//Build the formatted item with multilines and return it
+		let formattedItem = type + "\n\t" + name + "\n\t" + label + "\n\t" + icon + "\n\t" + group + "\n\t" + tag + "\n\t" + channel;
+		return formattedItem;
+	} else {
+		// @todo add window message for user
+		return "";
 	}
-
-	let formattedItem = newType + newName + newLabel + newIcon + newGroup + newTag + channel;
-
-	return formattedItem;
 }
 
-// Count the amount of whitespace starting at startPos
+/**
+ * Count the amount of whitespace starting at startPos
+ *
+ * @param doc
+ * @param startPos
+ */
 function countWhitespace(doc: vscode.TextDocument, startPos: vscode.Position): number {
 	let whitespaceRange = doc.getWordRangeAtPosition(startPos, /[ \t]+/);
 	if (whitespaceRange && whitespaceRange.isSingleLine) {
@@ -410,7 +680,12 @@ function countWhitespace(doc: vscode.TextDocument, startPos: vscode.Position): n
 	return 0;
 }
 
-// Add spaces to fill column
+/**
+ * Calculate the number of tabs to separate each part item to fit the widest column
+ *
+ * @param str
+ * @param finalLength
+ */
 function fillTabs(str: string, finalLength: number): string {
 	// Check it item is empty
 	if (finalLength === 0) {
@@ -450,5 +725,7 @@ function fillTabs(str: string, finalLength: number): string {
 	return str;
 }
 
-// this method is called when your extension is deactivated
+/**
+ * This method is called when the extension is closed and deactivated
+ */
 export function deactivate() {}
