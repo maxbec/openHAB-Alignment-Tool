@@ -129,7 +129,7 @@ function commandInsertNewDateTimeItem(): void {
 /**
  * Format an existing item definition
  */
-function commandReformatItem(): void {
+async function commandReformatItem() {
 	// Only execute if there's an active text editor
 	if (!vscode.window.activeTextEditor) {
 		return;
@@ -156,23 +156,18 @@ function commandReformatItem(): void {
 	}
 
 	// Apply all edits on the code
-	applyTextEdits();
+	textWorkEdit.set(doc.uri, textTextEdits);
+	await vscode.workspace.applyEdit(textWorkEdit);
 }
 
 /**
  * Reformat the current file with the style selected in the settings
  */
-function commandReformatFile(): void {
+async function commandReformatFile() {
 	// Only execute if there's an active text editor
 	if (!vscode.window.activeTextEditor) {
 		return;
 	}
-
-	// Define the basic vscode variables
-	let doc = vscode.window.activeTextEditor.document;
-	let editor = vscode.window.activeTextEditor;
-	let currentPos = editor.selection.active;
-	let newPos: vscode.Position;
 
 	// Clear all edits
 	clearTextEdits = [];
@@ -190,24 +185,10 @@ function commandReformatFile(): void {
 	highestChannelLength = 0;
 
 	// Clean the file and prepare it for formatting
-	cleanAndPrepareFile();
+	await cleanAndPrepareFile();
 
-	// Get the section lengths of each line with an item in it.
-	getAllItemPartLengths();
-
-	// Reformat each item line
-	for (let index = 0; index < doc.lineCount; index++) {
-		newPos = currentPos.with(index, 0);
-		editor.selection = new vscode.Selection(newPos, newPos);
-		let reformattedItem = reformatItem();
-		if (reformattedItem !== "") {
-			let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(newPos.line).text.length));
-			textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
-		}
-	}
-
-	// Apply all clean and formatting Edits
-	applyTextEdits();
+	// Format the file
+	await formatFile();
 }
 
 /**----------------------------------------------------------------------------------------------------------
@@ -217,7 +198,7 @@ function commandReformatFile(): void {
  * Clean file and prepare it for formatting.
  * Cleans all unnecessary lines, tabs, spaces, etc.
  */
-function cleanAndPrepareFile() {
+async function cleanAndPrepareFile() {
 	// Only execute if there's an active text editor
 	if (!vscode.window.activeTextEditor) {
 		return;
@@ -232,6 +213,97 @@ function cleanAndPrepareFile() {
 	// Clear all edits
 	clearTextEdits = [];
 	clearWorkEdit = new vscode.WorkspaceEdit();
+
+	// Reset maximum values
+	highestTypeLength = 0;
+	highestNameLength = 0;
+	highestLabelLength = 0;
+	highestIconLength = 0;
+	highestGroupLength = 0;
+	highestTagLength = 0;
+	highestChannelLength = 0;
+
+	// Reset Block Comment Boolean
+	isInBlockComment = false;
+	let newLineCounter = 0;
+
+	// Clear the file in case of line-by-line item definitions
+	for (let index = 0; index < doc.lineCount; index++) {
+		// Get Position at the beginning of the current line and start a selection
+		newPos = currentPos.with(index, 0);
+		editor.selection = new vscode.Selection(newPos, newPos);
+
+		// Get Text of current line and check if there is a comment in it
+		let lineText = doc.lineAt(newPos.line);
+		var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
+		var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
+		var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
+
+		// If line is empty or contains a comment continue to the next line
+		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
+			newLineCounter++;
+			continue;
+		} else if (comment) {
+			continue;
+			newLineCounter = 0;
+		} else if (blockComment && endBlockComment) {
+			isInBlockComment = false;
+			newLineCounter = 0;
+			continue;
+		} else if (blockComment) {
+			isInBlockComment = true;
+			newLineCounter = 0;
+			continue;
+		} else if (endBlockComment) {
+			isInBlockComment = false;
+			newLineCounter = 0;
+			continue;
+		} else if (isInBlockComment) {
+			newLineCounter = 0;
+			continue;
+		}
+
+		// Discover item Type
+		var wordRange = doc.getWordRangeAtPosition(newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos)), REGEX_ITEM_TYPE);
+
+		// Check if there is an item type at the beginning of each line
+		if (wordRange && wordRange.isSingleLine) {
+			// Clear all free lines before an item definition
+			if (newLineCounter !== 0) {
+				let newRange = new vscode.Range(newPos.line - newLineCounter, doc.lineAt(newPos.line - newLineCounter).text.length, newPos.line, 0);
+				clearTextEdits.push(vscode.TextEdit.delete(newRange));
+			}
+
+			// Reset new Line counter
+			newLineCounter = 0;
+			continue;
+		} else {
+			// Select the \n mark at the end of the line => Delete all new lines in item definitions
+			let newRange = new vscode.Range(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length, newPos.line, 0);
+			clearTextEdits.push(vscode.TextEdit.delete(newRange));
+		}
+	}
+
+	// Apply all clean edits
+	clearWorkEdit.set(doc.uri, clearTextEdits);
+	await vscode.workspace.applyEdit(clearWorkEdit);
+}
+
+/**
+ * Format the whole file after cleaning and preparing it.
+ */
+async function formatFile() {
+	// Get the section lengths of each line with an item in it.
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+
+	// Define the basic vscode variables
+	let doc = vscode.window.activeTextEditor.document;
+	let editor = vscode.window.activeTextEditor;
+	let currentPos = editor.selection.active;
+	let newPos: vscode.Position;
 
 	// Reset maximum values
 	highestTypeLength = 0;
@@ -275,53 +347,96 @@ function cleanAndPrepareFile() {
 			continue;
 		}
 
-		// Discover item Type
-		var wordRange = doc.getWordRangeAtPosition(newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos)), REGEX_ITEM_TYPE);
+		// Default these to empty. They will be changed
+		// if they exist in the item definition
+		let itemType = "";
+		let itemName = "";
+		let itemLabel = "";
+		let itemIcon = "";
+		let itemGroup = "";
+		let itemTag = "";
+		let itemChannel = "";
 
-		// Check if there is an item type at the beginning of each line
+		// Discover item Type
+		// Count Whitespace or tabs at the begin of the line
+		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
 		if (wordRange && wordRange.isSingleLine) {
-			continue;
-		} else {
-			// Select the \n mark at the end of the line => Delete all new lines in item definitions
-			let newRange = new vscode.Range(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length, newPos.line, 0);
-			clearTextEdits.push(vscode.TextEdit.delete(newRange));
+			itemType = doc.getText(wordRange);
+			highestTypeLength = itemType.length > highestTypeLength ? itemType.length : highestTypeLength;
+			// FIXME console.log("Matched type: " + itemType);
+			newPos = newPos.with(newPos.line, newPos.character + itemType.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+			// Discover item Name
+			var itemNameRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_NAME);
+			if (itemNameRange && itemNameRange.isSingleLine) {
+				itemName = doc.getText(itemNameRange);
+				highestNameLength = itemName.length > highestNameLength ? itemName.length : highestNameLength;
+				// FIXME console.log("Matched name: " + itemName);
+				newPos = newPos.with(newPos.line, newPos.character + itemName.length);
+				newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+			}
+		}
+		// Must have a type and name to continue
+		if (itemType.length === 0 || itemName.length === 0) {
+			return "";
+		}
+		// Discover item Label
+		let itemLabelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_LABEL);
+		if (itemLabelRange && itemLabelRange.isSingleLine) {
+			itemLabel = doc.getText(itemLabelRange);
+			highestLabelLength = itemLabel.length > highestLabelLength ? itemLabel.length : highestLabelLength;
+			//console.log("Label: " + itemLabel);
+			newPos = newPos.with(newPos.line, newPos.character + itemLabel.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Icon
+		let itemIconRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_ICON);
+		if (itemIconRange && itemIconRange.isSingleLine) {
+			itemIcon = doc.getText(itemIconRange);
+			highestIconLength = itemIcon.length > highestIconLength ? itemIcon.length : highestIconLength;
+			newPos = newPos.with(newPos.line, newPos.character + itemIcon.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Group
+		let itemGroupRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_GROUP);
+		if (itemGroupRange && itemGroupRange.isSingleLine) {
+			itemGroup = doc.getText(itemGroupRange);
+			highestGroupLength = itemGroup.length > highestGroupLength ? itemGroup.length : highestGroupLength;
+			newPos = newPos.with(newPos.line, newPos.character + itemGroup.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Tag
+		let itemTagRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TAG);
+		if (itemTagRange && itemTagRange.isSingleLine) {
+			itemTag = doc.getText(itemTagRange);
+			highestTagLength = itemTag.length > highestTagLength ? itemTag.length : highestTagLength;
+			//console.log("Tag: " + itemTag);
+			newPos = newPos.with(newPos.line, newPos.character + itemTag.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+		}
+		// Discover item Channel
+		let itemChannelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_CHANNEL);
+		if (itemChannelRange && itemChannelRange.isSingleLine) {
+			itemChannel = doc.getText(itemChannelRange);
+			highestChannelLength = itemChannel.length > highestChannelLength ? itemChannel.length : highestChannelLength;
+			newPos = newPos.with(newPos.line, newPos.character + itemChannel.length);
+			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 		}
 	}
 
-	// Apply all clean edits
-	applyCleanEdits();
-}
-
-/**
- * Apply the clean and prepare edits
- */
-async function applyCleanEdits() {
-	// Only execute if there's an active text editor
-	if (!vscode.window.activeTextEditor) {
-		return;
+	// Reformat each item line
+	for (let index = 0; index < doc.lineCount; index++) {
+		newPos = currentPos.with(index, 0);
+		editor.selection = new vscode.Selection(newPos, newPos);
+		let reformattedItem = reformatItem();
+		if (reformattedItem !== "") {
+			let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(newPos.line).text.length));
+			textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
+		}
 	}
 
-	// Define the basic vscode variables
-	let doc = vscode.window.activeTextEditor.document;
-
-	// First apply the clear and prepare edits
-	clearWorkEdit.set(doc.uri, clearTextEdits);
-	await vscode.workspace.applyEdit(clearWorkEdit);
-}
-
-/**
- * Applies all Edits on the current TextEditor.
- */
-async function applyTextEdits() {
-	// Only execute if there's an active text editor
-	if (!vscode.window.activeTextEditor) {
-		return;
-	}
-
-	// Define the basic vscode variables
-	let doc = vscode.window.activeTextEditor.document;
-
-	// Then apply the formatting edits
+	// Apply all clean and formatting Edits
 	textWorkEdit.set(doc.uri, textTextEdits);
 	await vscode.workspace.applyEdit(textWorkEdit);
 }
@@ -637,6 +752,7 @@ function formatItem(type: string, name: string, label: string, icon: string, gro
 	// Get the format configuration settings
 	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
 	let formatStyle = config.formatStyle;
+	let newLineAfterItem = config.newLineAfterItem;
 
 	// Check for the formatting style in the user configuration
 	if (formatStyle === "Column") {
@@ -658,7 +774,18 @@ function formatItem(type: string, name: string, label: string, icon: string, gro
 		return formattedItem;
 	} else if (formatStyle === "Multiline") {
 		//Build the formatted item with multilines and return it
-		let formattedItem = type + "\n\t" + name + "\n\t" + label + "\n\t" + icon + "\n\t" + group + "\n\t" + tag + "\n\t" + channel;
+		let formattedItem = type + "\n\t" + name;
+
+		// Check if item parts are empty
+		formattedItem = label === "" ? formattedItem : formattedItem + "\n\t" + label;
+		formattedItem = icon === "" ? formattedItem : formattedItem + "\n\t" + icon;
+		formattedItem = group === "" ? formattedItem : formattedItem + "\n\t" + group;
+		formattedItem = tag === "" ? formattedItem : formattedItem + "\n\t" + tag;
+		formattedItem = channel === "" ? formattedItem : formattedItem + "\n\t" + channel;
+
+		// Insert a new line after the item if config says so
+		formattedItem = newLineAfterItem === false ? formattedItem : formattedItem + "\n";
+
 		return formattedItem;
 	} else {
 		// @todo add window message for user

@@ -77,148 +77,145 @@
 				"title": "openHAB Reformat File"
 			}
 		],
+		"configuration": {
+			"type": "object",
+			"title": "openHAB Alignment Tool",
+			"properties": {
+				"oh-alignment-tool.preserveWhitespace": {
+					"type": "boolean",
+					"default": false,
+					"description": "Preserves any leading whitespace when reformatting an item."
+				},
+				"oh-alignment-tool.newLineAfterItem": {
+					"type": "boolean",
+					"default": false,
+					"description": "Choose if you want to have a new line inserted after each item."
+				},
+				"oh-alignment-tool.formatStyle": {
+					"type": "string",
+					"default": "Column",
+					"enum": [
+						"Column",
+						"Multiline"
+					],
+					"enumDescriptions": [
+						"Formats the files in a column-style. E.g. in an items file each item is one line separated by tabs.",
+						"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
+					]
+				}
+			}
+		},
 		"keybindings": [
 			{
-				"command": "extension.align-file",
-				"key": "ctrl+a+l",
-				"mac": "cmd+a+l",
-				"when": "editorTextFocus"
-			}
-		]
-	},
-	"configuration": {
-		"type": "object",
-		"title": "openHAB Alignment Tool",
-		"properties": {
-			"oh-alignment-tool.preserveWhitespace": {
-				"type": "boolean",
-				"default": false,
-				"description": "Preserves any leading whitespace when reformatting an item."
+				"mac": "cmd+i cmd+i",
+				"win": "ctrl+i ctrl+i",
+				"linux": "ctrl+i ctrl+i",
+				"key": "ctrl+i ctrl+i",
+				"command": "extension.insert-item-generic"
 			},
-			"oh-alignment-tool.formatStyle": {
-				"type": "string",
-				"default": "Column",
-				"enum": [
-					"Column",
-					"Multiline"
-				],
-				"enumDescriptions": [
-					"Formats the files in a column-style. E.g. in an items file each item is one line separated by tabs.",
-					"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
-				]
+			{
+				"mac": "cmd+i cmd+s",
+				"win": "ctrl+i ctrl+s",
+				"linux": "ctrl+i ctrl+s",
+				"key": "ctrl+i ctrl+s",
+				"command": "extension.insert-item-switch"
+			},
+			{
+				"mac": "cmd+i cmd+d",
+				"win": "ctrl+i ctrl+d",
+				"linux": "ctrl+i ctrl+d",
+				"key": "ctrl+i ctrl+d",
+				"command": "extension.insert-item-dimmer"
+			},
+			{
+				"mac": "cmd+i cmd+r",
+				"win": "ctrl+i ctrl+r",
+				"linux": "ctrl+i ctrl+r",
+				"key": "ctrl+i ctrl+r",
+				"command": "extension.insert-item-string"
+			},
+			{
+				"mac": "cmd+i cmd+n",
+				"win": "ctrl+i ctrl+n",
+				"linux": "ctrl+i ctrl+n",
+				"key": "ctrl+i ctrl+n",
+				"command": "extension.insert-item-number"
+			},
+			{
+				"mac": "cmd+i cmd+t",
+				"win": "ctrl+i ctrl+t",
+				"linux": "ctrl+i ctrl+t",
+				"key": "ctrl+i ctrl+t",
+				"command": "extension.insert-item-datetime"
+			},
+			{
+				"mac": "cmd+i cmd+f",
+				"win": "ctrl+i ctrl+f",
+				"linux": "ctrl+i ctrl+f",
+				"key": "ctrl+i ctrl+f",
+				"command": "extension.reformat-item"
+			},
+			{
+				"mac": "cmd+i cmd+l",
+				"win": "ctrl+i ctrl+l",
+				"linux": "ctrl+i ctrl+l",
+				"key": "ctrl+i ctrl+l",
+				"command": "extension.reformat-file"
 			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "extension.insert-item-generic",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.insert-item-switch",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.insert-item-dimmer",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.insert-item-string",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.insert-item-number",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.insert-item-datetime",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.reformat-item",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.reformat-file",
+					"group": "navigation"
+				}
+			]
+		},
+		"scripts": {
+			"vscode:prepublish": "npm run compile",
+			"compile": "tsc -p ./",
+			"watch": "tsc -watch -p ./",
+			"pretest": "npm run compile",
+			"test": "node ./out/test/runTest.js"
+		},
+		"devDependencies": {
+			"@types/glob": "^7.1.1",
+			"@types/mocha": "^5.2.6",
+			"@types/node": "^10.17.0",
+			"@types/vscode": "^1.39.0",
+			"glob": "^7.1.5",
+			"mocha": "^6.2.2",
+			"tslint": "^5.12.1",
+			"typescript": "^3.6.4",
+			"vscode-test": "^1.2.0"
 		}
-	},
-	"keybindings": [
-		{
-			"mac": "cmd+i cmd+i",
-			"win": "ctrl+i ctrl+i",
-			"linux": "ctrl+i ctrl+i",
-			"key": "ctrl+i ctrl+i",
-			"command": "extension.insert-item-generic"
-		},
-		{
-			"mac": "cmd+i cmd+s",
-			"win": "ctrl+i ctrl+s",
-			"linux": "ctrl+i ctrl+s",
-			"key": "ctrl+i ctrl+s",
-			"command": "extension.insert-item-switch"
-		},
-		{
-			"mac": "cmd+i cmd+d",
-			"win": "ctrl+i ctrl+d",
-			"linux": "ctrl+i ctrl+d",
-			"key": "ctrl+i ctrl+d",
-			"command": "extension.insert-item-dimmer"
-		},
-		{
-			"mac": "cmd+i cmd+r",
-			"win": "ctrl+i ctrl+r",
-			"linux": "ctrl+i ctrl+r",
-			"key": "ctrl+i ctrl+r",
-			"command": "extension.insert-item-string"
-		},
-		{
-			"mac": "cmd+i cmd+n",
-			"win": "ctrl+i ctrl+n",
-			"linux": "ctrl+i ctrl+n",
-			"key": "ctrl+i ctrl+n",
-			"command": "extension.insert-item-number"
-		},
-		{
-			"mac": "cmd+i cmd+t",
-			"win": "ctrl+i ctrl+t",
-			"linux": "ctrl+i ctrl+t",
-			"key": "ctrl+i ctrl+t",
-			"command": "extension.insert-item-datetime"
-		},
-		{
-			"mac": "cmd+i cmd+f",
-			"win": "ctrl+i ctrl+f",
-			"linux": "ctrl+i ctrl+f",
-			"key": "ctrl+i ctrl+f",
-			"command": "extension.reformat-item"
-		},
-		{
-			"mac": "cmd+i cmd+l",
-			"win": "ctrl+i ctrl+l",
-			"linux": "ctrl+i ctrl+l",
-			"key": "ctrl+i ctrl+l",
-			"command": "extension.reformat-file"
-		}
-	],
-	"menus": {
-		"editor/context": [
-			{
-				"command": "extension.insert-item-generic",
-				"group": "navigation"
-			},
-			{
-				"command": "extension.insert-item-switch",
-				"group": "navigation"
-			},
-			{
-				"command": "extension.insert-item-dimmer",
-				"group": "navigation"
-			},
-			{
-				"command": "extension.insert-item-string",
-				"group": "navigation"
-			},
-			{
-				"command": "extension.insert-item-number",
-				"group": "navigation"
-			},
-			{
-				"command": "extension.insert-item-datetime",
-				"group": "navigation"
-			},
-			{
-				"command": "extension.reformat-item",
-				"group": "navigation"
-			},
-			{
-				"command": "extension.reformat-file",
-				"group": "navigation"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.17.0",
-		"@types/vscode": "^1.39.0",
-		"glob": "^7.1.5",
-		"mocha": "^6.2.2",
-		"tslint": "^5.12.1",
-		"typescript": "^3.6.4",
-		"vscode-test": "^1.2.0"
 	}
 }
