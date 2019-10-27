@@ -2,7 +2,7 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
-## [1.1.2] - 26.10.2019
+## [1.3.0] - 27.10.2019
 
 ### Added
 
