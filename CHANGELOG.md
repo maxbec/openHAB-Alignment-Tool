@@ -2,6 +2,13 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.3.1] - 27.10.2019
+
+### Changed
+
+-    Fixed error in the package.json which prevented the correct execution of the npm scripts.
+-    Fixed error which deleted item line after a comment line.
+
 ## [1.3.0] - 27.10.2019
 
 ### Added
