@@ -775,7 +775,7 @@ function formatItem(type: string, name: string, label: string, icon: string, gro
 		let formattedItem = newType + newName + newLabel + newIcon + newGroup + newTag + channel;
 		return formattedItem;
 	} else if (formatStyle === "Multiline") {
-		//Build the formatted item with multilines and return it
+		//Build the formatted item with new lines for every item part and return it
 		let formattedItem = type + "\n\t" + name;
 
 		// Check if item parts are empty
