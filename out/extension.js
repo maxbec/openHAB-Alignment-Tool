@@ -4,6 +4,8 @@
  *
  * @todo Complete Header description and tags.
  * @author Max Beckenbauer
+ *
+ * Credits to Mark Hilbush and his openHAB Formatter extension.
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -230,8 +232,8 @@ function cleanAndPrepareFile() {
                 continue;
             }
             else if (comment) {
-                continue;
                 newLineCounter = 0;
+                continue;
             }
             else if (blockComment && endBlockComment) {
                 isInBlockComment = false;
@@ -269,6 +271,7 @@ function cleanAndPrepareFile() {
                 // Select the \n mark at the end of the line => Delete all new lines in item definitions
                 let newRange = new vscode.Range(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length, newPos.line, 0);
                 clearTextEdits.push(vscode.TextEdit.delete(newRange));
+                newLineCounter = 0;
             }
         }
         // Apply all clean edits
@@ -423,138 +426,6 @@ function formatFile() {
         textWorkEdit.set(doc.uri, textTextEdits);
         yield vscode.workspace.applyEdit(textWorkEdit);
     });
-}
-/**
- * Calculate the length of all item parts. And search for the longest length for each item part.
- */
-function getAllItemPartLengths() {
-    // Only execute if there's an active text editor
-    if (!vscode.window.activeTextEditor) {
-        return;
-    }
-    // Define the basic vscode variables
-    let doc = vscode.window.activeTextEditor.document;
-    let editor = vscode.window.activeTextEditor;
-    let currentPos = editor.selection.active;
-    let newPos;
-    // Reset maximum values
-    highestTypeLength = 0;
-    highestNameLength = 0;
-    highestLabelLength = 0;
-    highestIconLength = 0;
-    highestGroupLength = 0;
-    highestTagLength = 0;
-    highestChannelLength = 0;
-    // Reset Block Comment Boolean
-    isInBlockComment = false;
-    // Clear the file in case of line-by-line item definitions
-    for (let index = 0; index < doc.lineCount; index++) {
-        // Get Position at the beginning of the current line and start a selection
-        newPos = currentPos.with(index, 0);
-        editor.selection = new vscode.Selection(newPos, newPos);
-        // Get Text of current line and check if there is a comment in it
-        let lineText = doc.lineAt(newPos.line);
-        var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
-        var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
-        var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
-        // If line is empty or contains a comment continue to the next line
-        if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
-            continue;
-        }
-        else if (comment) {
-            continue;
-        }
-        else if (blockComment && endBlockComment) {
-            isInBlockComment = false;
-            continue;
-        }
-        else if (blockComment) {
-            isInBlockComment = true;
-            continue;
-        }
-        else if (endBlockComment) {
-            isInBlockComment = false;
-            continue;
-        }
-        else if (isInBlockComment) {
-            continue;
-        }
-        // Default these to empty. They will be changed
-        // if they exist in the item definition
-        let itemType = "";
-        let itemName = "";
-        let itemLabel = "";
-        let itemIcon = "";
-        let itemGroup = "";
-        let itemTag = "";
-        let itemChannel = "";
-        // Discover item Type
-        // Count Whitespace or tabs at the begin of the line
-        newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-        var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
-        if (wordRange && wordRange.isSingleLine) {
-            itemType = doc.getText(wordRange);
-            highestTypeLength = itemType.length > highestTypeLength ? itemType.length : highestTypeLength;
-            // FIXME console.log("Matched type: " + itemType);
-            newPos = newPos.with(newPos.line, newPos.character + itemType.length);
-            newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-            // Discover item Name
-            var itemNameRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_NAME);
-            if (itemNameRange && itemNameRange.isSingleLine) {
-                itemName = doc.getText(itemNameRange);
-                highestNameLength = itemName.length > highestNameLength ? itemName.length : highestNameLength;
-                // FIXME console.log("Matched name: " + itemName);
-                newPos = newPos.with(newPos.line, newPos.character + itemName.length);
-                newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-            }
-        }
-        // Must have a type and name to continue
-        if (itemType.length === 0 || itemName.length === 0) {
-            return "";
-        }
-        // Discover item Label
-        let itemLabelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_LABEL);
-        if (itemLabelRange && itemLabelRange.isSingleLine) {
-            itemLabel = doc.getText(itemLabelRange);
-            highestLabelLength = itemLabel.length > highestLabelLength ? itemLabel.length : highestLabelLength;
-            //console.log("Label: " + itemLabel);
-            newPos = newPos.with(newPos.line, newPos.character + itemLabel.length);
-            newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-        }
-        // Discover item Icon
-        let itemIconRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_ICON);
-        if (itemIconRange && itemIconRange.isSingleLine) {
-            itemIcon = doc.getText(itemIconRange);
-            highestIconLength = itemIcon.length > highestIconLength ? itemIcon.length : highestIconLength;
-            newPos = newPos.with(newPos.line, newPos.character + itemIcon.length);
-            newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-        }
-        // Discover item Group
-        let itemGroupRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_GROUP);
-        if (itemGroupRange && itemGroupRange.isSingleLine) {
-            itemGroup = doc.getText(itemGroupRange);
-            highestGroupLength = itemGroup.length > highestGroupLength ? itemGroup.length : highestGroupLength;
-            newPos = newPos.with(newPos.line, newPos.character + itemGroup.length);
-            newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-        }
-        // Discover item Tag
-        let itemTagRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TAG);
-        if (itemTagRange && itemTagRange.isSingleLine) {
-            itemTag = doc.getText(itemTagRange);
-            highestTagLength = itemTag.length > highestTagLength ? itemTag.length : highestTagLength;
-            //console.log("Tag: " + itemTag);
-            newPos = newPos.with(newPos.line, newPos.character + itemTag.length);
-            newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-        }
-        // Discover item Channel
-        let itemChannelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_CHANNEL);
-        if (itemChannelRange && itemChannelRange.isSingleLine) {
-            itemChannel = doc.getText(itemChannelRange);
-            highestChannelLength = itemChannel.length > highestChannelLength ? itemChannel.length : highestChannelLength;
-            newPos = newPos.with(newPos.line, newPos.character + itemChannel.length);
-            newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-        }
-    }
 }
 /**
  * Insert a new item whose parts are defined by the passed arguments
@@ -741,7 +612,7 @@ function formatItem(type, name, label, icon, group, tag, channel, leadingWhitesp
         return formattedItem;
     }
     else if (formatStyle === "Multiline") {
-        //Build the formatted item with multilines and return it
+        //Build the formatted item with new lines for every item part and return it
         let formattedItem = type + "\n\t" + name;
         // Check if item parts are empty
         formattedItem = label === "" ? formattedItem : formattedItem + "\n\t" + label;
