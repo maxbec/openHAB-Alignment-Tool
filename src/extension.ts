@@ -88,10 +88,6 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("extension.insert-item-datetime", () => {
 		commandInsertNewDateTimeItem();
 	});
-	// Reformat an existing item
-	vscode.commands.registerCommand("extension.reformat-item", () => {
-		commandReformatItem();
-	});
 	// Reformat all items in the file
 	vscode.commands.registerCommand("extension.reformat-file", () => {
 		commandReformatFile();
@@ -126,40 +122,6 @@ function commandInsertNewNumberItem(): void {
 // Add new DateTime item
 function commandInsertNewDateTimeItem(): void {
 	insertItem("DateTime", DEF_ITEM_NAME, '"Label [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"', "<time>", DEF_ITEM_GROUP, DEF_ITEM_TAG, DEF_ITEM_CHANNEL);
-}
-
-/**
- * Format an existing item definition
- */
-async function commandReformatItem() {
-	// Only execute if there's an active text editor
-	if (!vscode.window.activeTextEditor) {
-		return;
-	}
-
-	// Define the basic vscode variables
-	let doc = vscode.window.activeTextEditor.document;
-	let editor = vscode.window.activeTextEditor;
-	let currentPos = editor.selection.active;
-	let newPos = currentPos.with(currentPos.line, 0);
-
-	// Clear all edits
-	clearTextEdits = [];
-	textTextEdits = [];
-	clearWorkEdit = new vscode.WorkspaceEdit();
-	textWorkEdit = new vscode.WorkspaceEdit();
-
-	// Reformat the Item in the selected line of the TextEditor and save it in the WorkspaceEdit
-	let reformattedItem = reformatItem();
-	if (reformattedItem !== "") {
-		let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(currentPos.line).text.length));
-		textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
-		textWorkEdit.set(doc.uri, textTextEdits);
-	}
-
-	// Apply all edits on the code
-	textWorkEdit.set(doc.uri, textTextEdits);
-	await vscode.workspace.applyEdit(textWorkEdit);
 }
 
 /**

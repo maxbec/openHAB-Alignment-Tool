@@ -29,7 +29,7 @@
 	"engines": {
 		"vscode": "^1.39.0"
 	},
-	"license": "https://github.com/MaxBec/openHAB-Alignment-Tool/blob/master/LICENSE",
+	"license": "EPL-2.0",
 	"activationEvents": [
 		"onLanguage:openhab"
 	],
@@ -65,11 +65,6 @@
 				"command": "extension.insert-item-datetime",
 				"category": "openHAB Alignment",
 				"title": "openHAB Insert DateTime Item"
-			},
-			{
-				"command": "extension.reformat-item",
-				"category": "openHAB Alignment",
-				"title": "openHAB Reformat Item"
 			},
 			{
 				"command": "extension.reformat-file",
