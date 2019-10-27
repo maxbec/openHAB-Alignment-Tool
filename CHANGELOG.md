@@ -2,6 +2,12 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.3.2] - 27.10.2019
+
+### Added
+
+-   Restore multiline indenting style from multiline formatting extension
+
 ## [1.3.1] - 27.10.2019
 
 ### Changed

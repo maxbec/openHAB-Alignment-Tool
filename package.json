@@ -1,7 +1,7 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"version": "1.3.1",
+	"version": "1.3.2",
 	"publisher": "max-beckenbauer",
 	"contributors": [
 		"Mark Hilbush"
@@ -97,7 +97,14 @@
 						"Formats the files in a column-style. E.g. in an items file each item is one line separated by tabs.",
 						"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
 					]
-				}
+				},
+                "oh-alignment-tool.multilineIndentAmount": {
+                    "type": [
+                        "number"
+                    ],
+                    "default": 28,
+                    "description": "Indent level when formatting multiline items."
+                }
 			}
 		},
 		"keybindings": [
