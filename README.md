@@ -28,6 +28,12 @@ Whitespaces in front of items get preserved and won't be deleted.
 
 `"oh-alignment-tool.preserveWhitespace": true`
 
+### Multiline Indent Amount
+
+With this option you can control the amount of indent when using the Multiline format.
+
+`"oh-alignment-tool.multilineIndentAmount": 28`
+
 ### Format Style
 
 The format style option gives you two styles between you can choose.

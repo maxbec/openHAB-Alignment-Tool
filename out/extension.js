@@ -559,6 +559,7 @@ function formatItem(type, name, label, icon, group, tag, channel, leadingWhitesp
     let config = vscode.workspace.getConfiguration("oh-alignment-tool");
     let formatStyle = config.formatStyle;
     let newLineAfterItem = config.newLineAfterItem;
+    let multilineIndentAmount = config.multilineIndentAmount;
     // Check for the formatting style in the user configuration
     if (formatStyle === "Column") {
         // Fill the required amount of tabs after each item part. For Column Style Formatting
@@ -577,14 +578,22 @@ function formatItem(type, name, label, icon, group, tag, channel, leadingWhitesp
         return formattedItem;
     }
     else if (formatStyle === "Multiline") {
+        // If item type is longer than the indent, make sure there's at least one space
+        let typeNameIndent;
+        if (type.length < multilineIndentAmount) {
+            typeNameIndent = multiLineIndent(multilineIndentAmount - type.length);
+        }
+        else {
+            typeNameIndent = multiLineIndent(1);
+        }
         //Build the formatted item with new lines for every item part and return it
-        let formattedItem = type + "\n\t" + name;
+        let formattedItem = multiLineIndent(leadingWhitespaceCount) + type + typeNameIndent + name;
         // Check if item parts are empty
-        formattedItem = label === "" ? formattedItem : formattedItem + "\n\t" + label;
-        formattedItem = icon === "" ? formattedItem : formattedItem + "\n\t" + icon;
-        formattedItem = group === "" ? formattedItem : formattedItem + "\n\t" + group;
-        formattedItem = tag === "" ? formattedItem : formattedItem + "\n\t" + tag;
-        formattedItem = channel === "" ? formattedItem : formattedItem + "\n\t" + channel;
+        formattedItem = label === "" ? formattedItem : formattedItem + "\n" + multiLineIndent(leadingWhitespaceCount + multilineIndentAmount) + label;
+        formattedItem = icon === "" ? formattedItem : formattedItem + "\n" + multiLineIndent(leadingWhitespaceCount + multilineIndentAmount) + icon;
+        formattedItem = group === "" ? formattedItem : formattedItem + "\n" + multiLineIndent(leadingWhitespaceCount + multilineIndentAmount) + group;
+        formattedItem = tag === "" ? formattedItem : formattedItem + "\n" + multiLineIndent(leadingWhitespaceCount + multilineIndentAmount) + tag;
+        formattedItem = channel === "" ? formattedItem : formattedItem + "\n" + multiLineIndent(leadingWhitespaceCount + multilineIndentAmount) + channel;
         // Insert a new line after the item if config says so
         formattedItem = newLineAfterItem === false ? formattedItem : formattedItem + "\n";
         return formattedItem;
@@ -647,6 +656,18 @@ function fillTabs(str, finalLength) {
         }
     }
     return str;
+}
+/**
+ * Return a string containing 'number' spaces
+ *
+ * @param number
+ */
+function multiLineIndent(count) {
+    let spaces = "";
+    for (let i = 0; i < count; i++) {
+        spaces = spaces + " ";
+    }
+    return spaces;
 }
 /**
  * This method is called when the extension is closed and deactivated
