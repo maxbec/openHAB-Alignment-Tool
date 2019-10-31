@@ -2,6 +2,12 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.3.4] - 31.10.2019
+
+### Added
+
+-    Commands at teh end of an item are not deleted anymore
+
 ## [1.3.3] - 27.10.2019
 
 ### Added

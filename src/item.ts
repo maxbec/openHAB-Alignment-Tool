@@ -9,8 +9,9 @@ class Item {
 	group: string;
 	tag: string;
 	channel: string;
+	comment: string;
 
-	constructor(line: number, leadingWhiteSpace: boolean, type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string) {
+	constructor(line: number, leadingWhiteSpace: boolean, type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string, comment?: string) {
 		this.line = line;
 		this.leadingWhiteSpace = leadingWhiteSpace;
 		this.type = type;
@@ -20,6 +21,7 @@ class Item {
 		this.group = group;
 		this.tag = tag;
 		this.channel = channel;
+		this.comment = comment ? comment : "";
 	}
 }
 

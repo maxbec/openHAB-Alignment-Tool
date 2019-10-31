@@ -149,13 +149,6 @@
 				"command": "extension.insert-item-datetime"
 			},
 			{
-				"mac": "cmd+i cmd+f",
-				"win": "ctrl+i ctrl+f",
-				"linux": "ctrl+i ctrl+f",
-				"key": "ctrl+i ctrl+f",
-				"command": "extension.reformat-item"
-			},
-			{
 				"mac": "cmd+i cmd+l",
 				"win": "ctrl+i ctrl+l",
 				"linux": "ctrl+i ctrl+l",
