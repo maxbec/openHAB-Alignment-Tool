@@ -515,15 +515,15 @@ function formatItem(item: Item): string {
 		// If item type is longer than the indent, make sure there's at least one space
 		let typeNameIndent = "";
 		let tabSize = 0;
+
 		// Get the tab size setting of the current editor
 		if (editor.options.tabSize !== undefined) {
 			tabSize = +editor.options.tabSize;
 		}
 
 		// Check if Indent Amount is smaller than item type
-		if (generateTabFromSpaces(item.type.length) > multilineIndentAmount) {
+		if (highestTypeLength > multilineIndentAmount) {
 			typeNameIndent = typeNameIndent + "\t";
-			multilineIndentAmount = generateTabFromSpaces(item.type.length);
 		} else {
 			let gapSize = multilineIndentAmount - Math.floor(item.type.length / tabSize);
 			for (let index = 0; index < gapSize; index++) {

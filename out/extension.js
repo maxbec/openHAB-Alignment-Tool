@@ -495,9 +495,8 @@ function formatItem(item) {
             tabSize = +editor.options.tabSize;
         }
         // Check if Indent Amount is smaller than item type
-        if (generateTabFromSpaces(item.type.length) > multilineIndentAmount) {
+        if (highestTypeLength > multilineIndentAmount) {
             typeNameIndent = typeNameIndent + "\t";
-            multilineIndentAmount = generateTabFromSpaces(item.type.length);
         }
         else {
             let gapSize = multilineIndentAmount - Math.floor(item.type.length / tabSize);
