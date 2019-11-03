@@ -22,7 +22,7 @@ const REGEX_EOL_COMMENT = /\/\/.*/;
 
 // Regex patterns to match parts of item definition
 const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number|Player|Rollershutter|String|Switch)(:\w+)?(:\w+)?(\(\w+,\s*\w+\))?(\(".*"\))?/;
-const REGEX_ITEM_NAME = /[a-zA-Z0-9][a-zA-Z0-9_]*/;
+const REGEX_ITEM_NAME = /[a-zA-Z0-9äöüÄÖÜ][a-zA-Z0-9äöüÄÖÜ_]*/;
 const REGEX_ITEM_LABEL = /\".+?\"/;
 const REGEX_ITEM_ICON = /<.+?>/;
 const REGEX_ITEM_GROUP = /\(.+?\)/;
@@ -274,12 +274,14 @@ async function cleanAndPrepareFile() {
 			newLineCounter = 0;
 			continue;
 		} else {
-			// Select the \n mark at the end of the line => Delete all new lines in item definitions
-			let newRange = new vscode.Range(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length, newPos.line, 0);
-			clearTextEdits.push(vscode.TextEdit.delete(newRange));
+			if (newPos.line > 0) {
+				// Select the \n mark at the end of the line => Delete all new lines in item definitions
+				let newRange = new vscode.Range(newPos.line - 1, doc.lineAt(newPos.line - 1).text.length, newPos.line, 0);
+				clearTextEdits.push(vscode.TextEdit.delete(newRange));
 
-			// Reset new Line counter
-			newLineCounter = 0;
+				// Reset new Line counter
+				newLineCounter = 0;
+			}
 		}
 	}
 
