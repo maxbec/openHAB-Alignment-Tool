@@ -2,6 +2,13 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.3.5] - 03.11.2019
+
+## Fixed
+
+-    Fixed bug for german umlauts in item type definitions
+-    Fixed bug for items in the first line of a item file.
+
 ## [1.3.4] - 31.10.2019
 
 ### Added
