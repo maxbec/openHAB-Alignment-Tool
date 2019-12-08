@@ -27,7 +27,7 @@
 		"email": "max.bec92@gmail.com"
 	},
 	"engines": {
-		"vscode": "^1.39.0"
+		"vscode": "^1.40.0"
 	},
 	"license": "EPL-2.0",
 	"activationEvents": [
