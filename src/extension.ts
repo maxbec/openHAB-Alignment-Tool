@@ -193,7 +193,7 @@ function insertItem(type: string, name: string, label: string, icon: string, gro
 	editor.selection = new vscode.Selection(newPos, newPos);
 	let range = new vscode.Range(newPos, newPos.with(newPos.line, 0));
 
-	let item = new Item(editor.selection.active.line, false, type, name, label, icon, group, tag, channel);
+	let item = new Item(editor.selection.active.line, 0, type, name, label, icon, group, tag, channel);
 	let formattedItem = formatItem(item);
 
 	let selection = range;
@@ -356,14 +356,11 @@ async function formatFile() {
 		let itemChannel = "";
 		let itemComment = "";
 
-		// Check if there is leading Whitespace. If Yes add one in tabsize.
-		let leadingWhiteSpace = false;
-		let leadingWhitespaceCount = lineText.firstNonWhitespaceCharacterIndex;
+		// Check if there is leading Whitespace. If Yes add one in size of a tab.
+		let leadingWhiteSpace = lineText.firstNonWhitespaceCharacterIndex;
 
 		if (preserveWhitespace === false) {
-			leadingWhiteSpace = false;
-		} else if (leadingWhitespaceCount > 0) {
-			leadingWhiteSpace = true;
+			leadingWhiteSpace = 0;
 		}
 
 		// Discover item Type
@@ -373,15 +370,14 @@ async function formatFile() {
 		if (wordRange && wordRange.isSingleLine) {
 			itemType = doc.getText(wordRange);
 			highestTypeLength = itemType.length > highestTypeLength ? itemType.length : highestTypeLength;
-			// FIXME console.log("Matched type: " + itemType);
 			newPos = newPos.with(newPos.line, newPos.character + itemType.length);
 			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
+
 			// Discover item Name
 			var itemNameRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_NAME);
 			if (itemNameRange && itemNameRange.isSingleLine) {
 				itemName = doc.getText(itemNameRange);
 				highestNameLength = itemName.length > highestNameLength ? itemName.length : highestNameLength;
-				// FIXME console.log("Matched name: " + itemName);
 				newPos = newPos.with(newPos.line, newPos.character + itemName.length);
 				newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 			}
@@ -395,7 +391,6 @@ async function formatFile() {
 		if (itemLabelRange && itemLabelRange.isSingleLine) {
 			itemLabel = doc.getText(itemLabelRange);
 			highestLabelLength = itemLabel.length > highestLabelLength ? itemLabel.length : highestLabelLength;
-			//console.log("Label: " + itemLabel);
 			newPos = newPos.with(newPos.line, newPos.character + itemLabel.length);
 			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 		}
@@ -488,7 +483,7 @@ function formatItem(item: Item): string {
 	let newLineAfterItem = config.newLineAfterItem;
 	let multilineIndentAmount = config.multilineIndentAmount;
 	let editor = vscode.window.activeTextEditor;
-	let leadingWhiteSpace = item.leadingWhiteSpace ? "\t" : "";
+	let formattedItem = "";
 
 	// Only execute if there's an active text editor
 	if (!editor) {
@@ -506,17 +501,20 @@ function formatItem(item: Item): string {
 		let newTag = fillColumns(item.tag, highestTagLength);
 
 		// Add the leading whitespace (for group and subgroups)
-		newType = item.leadingWhiteSpace ? "\t" + newType : newType;
+		// Add tabs to string
+		for (let i = 0; i < item.leadingWhiteSpace; i++) {
+			newType = "\t" + newType;
+		}
 
 		// Build the formatted item and return it
-		let formattedItem = newType + newName + newLabel + newIcon + newGroup + newTag + item.channel + "\t" + item.comment;
-		return formattedItem;
+		formattedItem = newType + newName + newLabel + newIcon + newGroup + newTag + item.channel + "\t" + item.comment;
 
 		// Multiline Format Style
 	} else if (formatStyle === "Multiline") {
 		// If item type is longer than the indent, make sure there's at least one space
 		let typeNameIndent = "";
 		let tabSize = 0;
+		let indent = "";
 
 		// Get the tab size setting of the current editor
 		if (editor.options.tabSize !== undefined) {
@@ -534,22 +532,27 @@ function formatItem(item: Item): string {
 		}
 
 		// Check if item parts are empty
-		let newLabel = fillMultiLines(item.label, multilineIndentAmount, leadingWhiteSpace);
-		let newIcon = fillMultiLines(item.icon, multilineIndentAmount, leadingWhiteSpace);
-		let newGroup = fillMultiLines(item.group, multilineIndentAmount, leadingWhiteSpace);
-		let newTag = fillMultiLines(item.tag, multilineIndentAmount, leadingWhiteSpace);
-		let newChannel = fillMultiLines(item.channel, multilineIndentAmount, leadingWhiteSpace);
-		let newComment = fillMultiLines(item.comment, multilineIndentAmount, leadingWhiteSpace);
+		let newLabel = fillMultiLines(item.label, multilineIndentAmount, item.leadingWhiteSpace);
+		let newIcon = fillMultiLines(item.icon, multilineIndentAmount, item.leadingWhiteSpace);
+		let newGroup = fillMultiLines(item.group, multilineIndentAmount, item.leadingWhiteSpace);
+		let newTag = fillMultiLines(item.tag, multilineIndentAmount, item.leadingWhiteSpace);
+		let newChannel = fillMultiLines(item.channel, multilineIndentAmount, item.leadingWhiteSpace);
+		let newComment = fillMultiLines(item.comment, multilineIndentAmount, item.leadingWhiteSpace);
 
 		// Insert a new line after the item if config says so
-		let formattedItem = leadingWhiteSpace + item.type + typeNameIndent + item.name + newLabel + newIcon + newGroup + newTag + newChannel + newComment;
-		formattedItem = newLineAfterItem === false ? formattedItem : formattedItem + "\n";
-
-		return formattedItem;
+		// Add the leading whitespace (for group and subgroups)
+		// Add tabs to string
+		for (let i = 0; i < item.leadingWhiteSpace; i++) {
+			indent = "\t" + indent;
+		}
+		formattedItem = indent + item.type + typeNameIndent + item.name + newLabel + newIcon + newGroup + newTag + newChannel + newComment;
 	} else {
 		// @todo add window message for user
 		return "";
 	}
+
+	formattedItem = newLineAfterItem === false ? formattedItem : formattedItem + "\n";
+	return formattedItem;
 }
 
 /**
@@ -609,12 +612,17 @@ function fillColumns(str: string, finalLength: number): string {
  * @param str
  * @param finalLength
  */
-function fillMultiLines(str: string, indenAmount: number, leadingWhiteSpace: string): string {
+function fillMultiLines(str: string, indenAmount: number, leadingWhiteSpace: number): string {
 	let editor = vscode.window.activeTextEditor;
 	let gap = "";
+	let indent = "";
 
 	// Only execute if there's an active text editor
 	if (!editor) {
+		return "";
+	}
+
+	if (str === "") {
 		return "";
 	}
 
@@ -623,7 +631,12 @@ function fillMultiLines(str: string, indenAmount: number, leadingWhiteSpace: str
 		gap = gap + "\t";
 	}
 
-	str = str === "" ? str : "\n" + leadingWhiteSpace + gap + str;
+	// Add tabs to string
+	for (let i = 0; i < leadingWhiteSpace; i++) {
+		indent = indent + "\t";
+	}
+
+	str = "\n" + indent + gap + str;
 
 	return str;
 }
@@ -643,7 +656,7 @@ function generateTabFromSpaces(spaces: number): number {
 		tabSize = +editor.options.tabSize;
 	}
 
-	// Add one space if spaces / tabsize is an even number
+	// Add one space if spaces / size of tab is an even number
 	spaces = (spaces / tabSize) % 1 === 0 ? spaces + 1 : spaces;
 
 	return Math.ceil(spaces / tabSize);

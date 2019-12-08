@@ -1,6 +1,6 @@
 class Item {
 	public line: number;
-	public leadingWhiteSpace: boolean;
+	public leadingWhiteSpace: number;
 
 	type: string;
 	name: string;
@@ -11,7 +11,7 @@ class Item {
 	channel: string;
 	comment: string;
 
-	constructor(line: number, leadingWhiteSpace: boolean, type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string, comment?: string) {
+	constructor(line: number, leadingWhiteSpace: number, type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string, comment?: string) {
 		this.line = line;
 		this.leadingWhiteSpace = leadingWhiteSpace;
 		this.type = type;
