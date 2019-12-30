@@ -158,6 +158,8 @@ function commandReformatFile() {
         yield cleanAndPrepareFile();
         // Format the file
         yield formatFile();
+        // Trim the generated whitespace at the end of a line
+        vscode.commands.executeCommand("editor.action.trimTrailingWhitespace");
     });
 }
 /**----------------------------------------------------------------------------------------------------------

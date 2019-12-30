@@ -165,6 +165,9 @@ async function commandReformatFile() {
 
 	// Format the file
 	await formatFile();
+
+	// Trim the generated whitespace at the end of a line
+	vscode.commands.executeCommand("editor.action.trimTrailingWhitespace");
 }
 
 /**----------------------------------------------------------------------------------------------------------
