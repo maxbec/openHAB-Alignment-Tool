@@ -2,6 +2,12 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.3.10] - 20.02.2020
+
+## Added
+
+-    Added new formatting style "ChannelColumn".
+
 ## [1.3.5] - 03.11.2019
 
 ## Fixed
