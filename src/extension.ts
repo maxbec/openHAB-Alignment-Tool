@@ -12,6 +12,10 @@
  *---------------------------------------------------------------------------------------------------------*/
 import * as vscode from "vscode";
 import Item = require("./item");
+import Bridge = require("./bridge");
+import Thing = require("./thing");
+import Channel = require("./channel");
+
 import { type } from "os";
 
 // Regex patterns to match comment sections
@@ -94,6 +98,10 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("extension.reformat-file", () => {
 		commandReformatFile();
 	});
+	// Reformat all items in the file
+	vscode.commands.registerCommand("extension.reformat-selection", () => {
+		commandReformatSelection();
+	});
 }
 
 /**
@@ -170,6 +178,42 @@ async function commandReformatFile() {
 	vscode.commands.executeCommand("editor.action.trimTrailingWhitespace");
 }
 
+/**
+ * Reformat the current selection with the style selected in the settings.
+ */
+async function commandReformatSelection() {
+	// Only execute if there's an active text editor
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+
+	// Define the basic vscode variables
+	let doc = vscode.window.activeTextEditor.document;
+
+	// Clear all text and workspace edit arrays
+	clearTextEdits = [];
+	textTextEdits = [];
+	clearWorkEdit = new vscode.WorkspaceEdit();
+	textWorkEdit = new vscode.WorkspaceEdit();
+
+	// Reset maximum item part length values
+	highestTypeLength = 0;
+	highestNameLength = 0;
+	highestLabelLength = 0;
+	highestIconLength = 0;
+	highestGroupLength = 0;
+	highestTagLength = 0;
+	highestChannelLength = 0;
+
+	// Clean the file and prepare it for formatting
+	await cleanAndPrepareFile();
+
+	// Format the file
+	await formatFile();
+
+	// Trim the generated whitespace at the end of a line
+	vscode.commands.executeCommand("editor.action.trimTrailingWhitespace");
+}
 /**----------------------------------------------------------------------------------------------------------
  * HELPER FUNCTIONS SECTION
  *---------------------------------------------------------------------------------------------------------*/
@@ -494,7 +538,7 @@ function formatItem(item: Item): string {
 	}
 
 	// Check for the formatting style in the user configuration
-	if (formatStyle === "Column") {
+	if (formatStyle === "Column" || formatStyle === "ChannelColumn") {
 		// Fill the required amount of tabs after each item part. For Column Style Formatting
 		let newType = fillColumns(item.type, highestTypeLength);
 		let newName = fillColumns(item.name, highestNameLength);
@@ -507,6 +551,17 @@ function formatItem(item: Item): string {
 		// Add tabs to string
 		for (let i = 0; i < item.leadingWhiteSpace; i++) {
 			newType = "\t" + newType;
+		}
+
+		if (formatStyle === "ChannelColumn") {
+			let tabs = "";
+			let tabIndent = highestTypeLength + highestNameLength + highestLabelLength + highestIconLength + highestGroupLength + highestTagLength;
+
+			for (let i = 0; i < tabIndent; i++) {
+				tabs = tabs + "\t";
+			}
+			tabs = ",\n" + tabs + " ";
+			item.channel = item.channel.replace(/,\s*/g, tabs);
 		}
 
 		// Build the formatted item and return it

@@ -16,11 +16,11 @@ class Item {
 		this.leadingWhiteSpace = leadingWhiteSpace;
 		this.type = type;
 		this.name = name;
-		this.label = label;
-		this.icon = icon;
-		this.group = group;
+		this.label = label.replace(/\"\s*/, '"').replace(/\s*\"/, '"');
+		this.icon = icon.replace(/\<\s*/, "<").replace(/\s*\>/, ">");
+		this.group = group.replace(/\(\s*/, "(").replace(/\s*\)/, ")");
 		this.tag = tag;
-		this.channel = channel;
+		this.channel = channel.replace(/\{\s*/, "{").replace(/\s*\}/, "}");
 		this.comment = comment ? comment : "";
 	}
 }

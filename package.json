@@ -6,7 +6,7 @@
 	"contributors": [
 		"Mark Hilbush"
 	],
-	"description": "Tool to format and indent openHAB files. At the moment only item-files can be formatted.",
+	"description": "Tool to format and indent openHAB files. At the moment only item and thing files can be formatted.",
 	"author": {
 		"name": "Maximilian Beckenbauer",
 		"email": "max.bec92@gmail.com",
@@ -30,6 +30,30 @@
 		"vscode": "^1.40.0"
 	},
 	"license": "EPL-2.0",
+	"languages": [
+		{
+			"id": "oh-items",
+			"extensions": [
+				".items"
+			],
+			"aliases": [
+				"Items",
+				"items",
+				"openhab items"
+			]
+		},
+		{
+			"id": "oh-things",
+			"extensions": [
+				".things"
+			],
+			"aliases": [
+				"Things",
+				"things",
+				"openhab things"
+			]
+		}
+	],
 	"activationEvents": [
 		"onLanguage:openhab"
 	],
@@ -44,32 +68,37 @@
 			{
 				"command": "extension.insert-item-switch",
 				"category": "openHAB Alignment",
-				"title": "openHAB Insert Switch Item"
+				"title": "Insert Switch Item"
 			},
 			{
 				"command": "extension.insert-item-dimmer",
 				"category": "openHAB Alignment",
-				"title": "openHAB Insert Dimmer Item"
+				"title": "Insert Dimmer Item"
 			},
 			{
 				"command": "extension.insert-item-string",
 				"category": "openHAB Alignment",
-				"title": "openHAB Insert String Item"
+				"title": "Insert String Item"
 			},
 			{
 				"command": "extension.insert-item-number",
 				"category": "openHAB Alignment",
-				"title": "openHAB Insert Number Item"
+				"title": "Insert Number Item"
 			},
 			{
 				"command": "extension.insert-item-datetime",
 				"category": "openHAB Alignment",
-				"title": "openHAB Insert DateTime Item"
+				"title": "Insert DateTime Item"
 			},
 			{
 				"command": "extension.reformat-file",
 				"category": "openHAB Alignment",
-				"title": "openHAB Reformat File"
+				"title": "Reformat File"
+			},
+			{
+				"command": "extension.reformat-selection",
+				"category": "openHAB Alignment",
+				"title": "Reformat Selection"
 			}
 		],
 		"configuration": {
@@ -91,6 +120,7 @@
 					"default": "Column",
 					"enum": [
 						"Column",
+						"ChannelColumn",
 						"Multiline"
 					],
 					"enumDescriptions": [
