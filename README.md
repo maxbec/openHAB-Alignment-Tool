@@ -9,14 +9,20 @@ format-types will be added. Feel free to enter feature-requests.
 
 The tool is available via the Command-Palette. Just type `cmnd+shift+p` and enter `openHAB Alignment Tool`. Then you get the option to format the whole file.
 
+### Item-Formatting:
+
 ![formatting item gif](images/item-formatting.gif)
+
+### Sitemap-Formatting:
+
+![formatting sitemap gif](images/sitemap-formatting.gif)
 
 ## Limitations
 
 The formatting is available for the following openhab file types:
 
--    item files
--    sitemap files
+-    `.items`
+-    `.sitemap`
 
 ## Extension Settings
 
