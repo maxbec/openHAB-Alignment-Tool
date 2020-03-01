@@ -6,7 +6,7 @@
 	"contributors": [
 		"Mark Hilbush"
 	],
-	"description": "Tool to format and indent openHAB files. At the moment only item and thing files can be formatted.",
+	"description": "Tool to format and indent openHAB files. At the moment only item and sitemap files can be formatted.",
 	"author": {
 		"name": "Maximilian Beckenbauer",
 		"email": "max.bec92@gmail.com",
@@ -51,6 +51,17 @@
 				"Things",
 				"things",
 				"openhab things"
+			]
+		},
+		{
+			"id": "oh-sitemaps",
+			"extensions": [
+				".sitemap"
+			],
+			"aliases": [
+				"Sitemap",
+				"sitemap",
+				"openhab sitemap"
 			]
 		}
 	],

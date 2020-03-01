@@ -2,6 +2,12 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [1.3.11] - 01.03.2020
+
+## Added
+
+-    Added the formatting for sitemap files.
+
 ## [1.3.10] - 20.02.2020
 
 ## Added
