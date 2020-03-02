@@ -300,6 +300,8 @@ async function cleanSitemapFile() {
 	wholeDoc = wholeDoc.replace(/}/g, "\n}");
 	// Insert new line before new element
 	wholeDoc = wholeDoc.replace(REGEX_SITEMAP_ELEMENTS, "\n$&");
+	// Insert new line before new element
+	wholeDoc = wholeDoc.replace(/\/\//g, "\n$&");
 
 	let selection = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length));
 	clearTextEdits.push(vscode.TextEdit.replace(selection, wholeDoc));
