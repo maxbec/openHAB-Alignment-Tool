@@ -10,7 +10,7 @@ format-types will be added. Feel free to enter feature-requests.
 
 ## Features
 
-The tool is available via the Command-Palette. Just type `cmnd+shift+p` and enter `openHAB Alignment Tool`. Then you get the option to format the whole file.
+The tool is available via the Command-Palette. Just type `cmnd+shift+p` and enter `openHAB Alignment`. Then you get the option to format the whole file.
 
 ### Item-Formatting:
 
