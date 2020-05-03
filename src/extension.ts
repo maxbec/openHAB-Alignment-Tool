@@ -40,9 +40,16 @@ const REGEX_ITEM_NAME = /[a-zA-Z0-9äöüÄÖÜ][a-zA-Z0-9äöüÄÖÜ_]*/;
 const REGEX_ITEM_LABEL = /\".+?\"/;
 const REGEX_ITEM_ICON = /<.+?>/;
 const REGEX_ITEM_GROUP = /\(.+?\)/;
-const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*]/;
+const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*\]/;
 const REGEX_ITEM_CHANNEL = /\{.+?\}/;
+
 const REGEX_SITEMAP_ELEMENTS = /\b(Frame|Default|Text|Group|Switch|Selection|Setpoint|Slider|Colorpicker|Webview|Mapview|Image|Video|Chart)\b/g;
+
+const REGEX_THING_TYPE = /^Bridge|Thing/g;
+const REGEX_THING_ID = /\w*:\w*:\w*/;
+const REGEX_THING_LABEL = /\".+?\"/;
+const REGEX_THING_LOCATION = /\".+?\"/;
+const REGEX_THING_PARAMETERS = /\[.*\]/;
 
 // Default item values
 const DEF_ITEM_TYPE = "Type";
@@ -53,7 +60,7 @@ const DEF_ITEM_GROUP = "(group)";
 const DEF_ITEM_TAG = '["tag"]';
 const DEF_ITEM_CHANNEL = '{ channel="" }\n';
 
-// Section lengths
+// Section lengths for items
 export let highestTypeLength = 0;
 export let highestNameLength = 0;
 export let highestLabelLength = 0;
@@ -61,6 +68,14 @@ export let highestIconLength = 0;
 export let highestGroupLength = 0;
 export let highestTagLength = 0;
 export let highestChannelLength = 0;
+// Section lengths for things
+export let highestThingTypeLength = 6;
+export let highestThingIdLength = 0;
+export let hightesThingLabelLength = 0;
+export let highestThingLocationLength = 0;
+export let highestThingParametersLength = 0;
+
+// Comment Checker
 let isInBlockComment = false;
 
 // Text and Workspace Edits for the "Prepare and Clean" and "Edit" procedures
@@ -683,7 +698,7 @@ async function cleanThingFile() {
 		}
 
 		// Discover item Type
-		var wordRange = doc.getWordRangeAtPosition(newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos)), REGEX_ITEM_TYPE);
+		var wordRange = doc.getWordRangeAtPosition(newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos)), REGEX_THING_TYPE);
 
 		// Check if there is an item type at the beginning of each line
 		if (wordRange && wordRange.isSingleLine) {
@@ -728,8 +743,8 @@ async function formatThingFile() {
 	let editor = vscode.window.activeTextEditor;
 	let currentPos = editor.selection.active;
 	let newPos: vscode.Position;
-	let itemArray: Array<Item>;
-	itemArray = new Array();
+	let thingArray: Array<Thing>;
+	thingArray = new Array();
 
 	// Get the format configuration settings
 	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
@@ -770,14 +785,12 @@ async function formatThingFile() {
 
 		// Default these to empty. They will be changed
 		// if they exist in the item definition
-		let itemType = "";
-		let itemName = "";
-		let itemLabel = "";
-		let itemIcon = "";
-		let itemGroup = "";
-		let itemTag = "";
-		let itemChannel = "";
-		let itemComment = "";
+		let thingType = "";
+		let thingId = "";
+		let thingLabel = "";
+		let thingLocation = "";
+		let thingParameters = "";
+		let thingComment = "";
 
 		// Check if there is leading Whitespace. If Yes add one in size of a tab.
 		let leadingWhiteSpace = lineText.firstNonWhitespaceCharacterIndex;
@@ -786,84 +799,71 @@ async function formatThingFile() {
 			leadingWhiteSpace = 0;
 		}
 
-		// Discover item Type
+		// Discover thing Type
 		// Count Whitespace or tabs at the begin of the line
 		newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-		var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TYPE);
+		var wordRange = doc.getWordRangeAtPosition(newPos, REGEX_THING_TYPE);
 		if (wordRange && wordRange.isSingleLine) {
-			itemType = doc.getText(wordRange);
-			highestTypeLength = itemType.length > highestTypeLength ? itemType.length : highestTypeLength;
-			newPos = newPos.with(newPos.line, newPos.character + itemType.length);
+			thingType = doc.getText(wordRange);
+			highestThingTypeLength = thingType.length > highestThingTypeLength ? thingType.length : highestThingTypeLength;
+			newPos = newPos.with(newPos.line, newPos.character + thingType.length);
 			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 
-			// Discover item Name
-			var itemNameRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_NAME);
-			if (itemNameRange && itemNameRange.isSingleLine) {
-				itemName = doc.getText(itemNameRange);
-				highestNameLength = itemName.length > highestNameLength ? itemName.length : highestNameLength;
-				newPos = newPos.with(newPos.line, newPos.character + itemName.length);
+			// Discover thing Name
+			var thingIdRange = doc.getWordRangeAtPosition(newPos, REGEX_THING_ID);
+			if (thingIdRange && thingIdRange.isSingleLine) {
+				thingId = doc.getText(thingIdRange);
+				highestNameLength = thingId.length > highestNameLength ? thingId.length : highestNameLength;
+				newPos = newPos.with(newPos.line, newPos.character + thingId.length);
 				newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 			}
 		}
 		// Must have a type and name to continue
-		if (itemType.length === 0 || itemName.length === 0) {
+		if (thingType.length === 0 || thingId.length === 0) {
 			return "";
 		}
-		// Discover item Label
-		let itemLabelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_LABEL);
-		if (itemLabelRange && itemLabelRange.isSingleLine) {
-			itemLabel = doc.getText(itemLabelRange);
-			highestLabelLength = itemLabel.length > highestLabelLength ? itemLabel.length : highestLabelLength;
-			newPos = newPos.with(newPos.line, newPos.character + itemLabel.length);
+		// Discover thing Label
+		let thingLabelRange = doc.getWordRangeAtPosition(newPos, REGEX_THING_LABEL);
+		if (thingLabelRange && thingLabelRange.isSingleLine) {
+			thingLabel = doc.getText(thingLabelRange);
+			highestLabelLength = thingLabel.length > highestLabelLength ? thingLabel.length : highestLabelLength;
+			newPos = newPos.with(newPos.line, newPos.character + thingLabel.length);
 			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 		}
-		// Discover item Icon
-		let itemIconRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_ICON);
-		if (itemIconRange && itemIconRange.isSingleLine) {
-			itemIcon = doc.getText(itemIconRange);
-			highestIconLength = itemIcon.length > highestIconLength ? itemIcon.length : highestIconLength;
-			newPos = newPos.with(newPos.line, newPos.character + itemIcon.length);
+		// Discover thing Icon
+		let thingLocationRange = doc.getWordRangeAtPosition(newPos, REGEX_THING_LOCATION);
+		if (thingLocationRange && thingLocationRange.isSingleLine) {
+			thingLocation = doc.getText(thingLocationRange);
+			highestIconLength = thingLocation.length > highestIconLength ? thingLocation.length : highestIconLength;
+			newPos = newPos.with(newPos.line, newPos.character + thingLocation.length);
 			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 		}
-		// Discover item Group
-		let itemGroupRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_GROUP);
-		if (itemGroupRange && itemGroupRange.isSingleLine) {
-			itemGroup = doc.getText(itemGroupRange);
-			highestGroupLength = itemGroup.length > highestGroupLength ? itemGroup.length : highestGroupLength;
-			newPos = newPos.with(newPos.line, newPos.character + itemGroup.length);
-			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-		}
-		// Discover item Tag
-		let itemTagRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_TAG);
-		if (itemTagRange && itemTagRange.isSingleLine) {
-			itemTag = doc.getText(itemTagRange);
-			highestTagLength = itemTag.length > highestTagLength ? itemTag.length : highestTagLength;
-			//console.log("Tag: " + itemTag);
-			newPos = newPos.with(newPos.line, newPos.character + itemTag.length);
-			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
-		}
-		// Discover item Channel
-		let itemChannelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_CHANNEL);
-		if (itemChannelRange && itemChannelRange.isSingleLine) {
-			itemChannel = doc.getText(itemChannelRange);
-			highestChannelLength = itemChannel.length > highestChannelLength ? itemChannel.length : highestChannelLength;
-			newPos = newPos.with(newPos.line, newPos.character + itemChannel.length);
+		// Discover thing Group
+		let thingParametersRange = doc.getWordRangeAtPosition(newPos, REGEX_THING_PARAMETERS);
+		if (thingParametersRange && thingParametersRange.isSingleLine) {
+			thingParameters = doc.getText(thingParametersRange);
+			highestGroupLength = thingParameters.length > highestGroupLength ? thingParameters.length : highestGroupLength;
+			newPos = newPos.with(newPos.line, newPos.character + thingParameters.length);
 			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 		}
 		// Discover comment at end of line
-		let itemCommentRange = doc.getWordRangeAtPosition(newPos, REGEX_EOL_COMMENT);
-		if (itemCommentRange && itemCommentRange.isSingleLine) {
-			itemComment = doc.getText(itemCommentRange);
-			newPos = newPos.with(newPos.line, newPos.character + itemComment.length);
+		let thingCommentRange = doc.getWordRangeAtPosition(newPos, REGEX_EOL_COMMENT);
+		if (thingCommentRange && thingCommentRange.isSingleLine) {
+			thingComment = doc.getText(thingCommentRange);
+			newPos = newPos.with(newPos.line, newPos.character + thingComment.length);
 			newPos = newPos.with(newPos.line, newPos.character + countWhitespace(doc, newPos));
 		}
 
+		let bindingId = thingId.split(":")[0];
+		let typeId = thingId.split(":")[1];
+		thingId = thingId.split(":")[2];
+
 		// Add the new item to the itemArray
-		itemArray.push(new Item(index, leadingWhiteSpace, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
+		thingArray.push(new Thing(index, leadingWhiteSpace, thingType, bindingId, typeId, thingId, thingLabel, thingLocation, thingParameters, thingComment));
 	}
 
 	// Convert the column lengths to tabs
-	highestTypeLength = generateTabFromSpaces(highestTypeLength);
+	highestThingTypeLength = generateTabFromSpaces(highestThingTypeLength);
 	highestNameLength = generateTabFromSpaces(highestNameLength);
 	highestLabelLength = generateTabFromSpaces(highestLabelLength);
 	highestIconLength = generateTabFromSpaces(highestIconLength);
@@ -871,14 +871,14 @@ async function formatThingFile() {
 	highestTagLength = generateTabFromSpaces(highestTagLength);
 	highestChannelLength = generateTabFromSpaces(highestChannelLength);
 
-	// Insert the newly formatted items
-	itemArray.forEach(function(item) {
-		newPos = currentPos.with(item.line, 0);
+	// Insert the newly formatted thing
+	thingArray.forEach(function(thing) {
+		newPos = currentPos.with(thing.line, 0);
 		editor.selection = new vscode.Selection(newPos, newPos);
-		let reformattedItem = formatItem(item);
-		if (reformattedItem !== "") {
+		let reformattedThing = formatThing(thing);
+		if (reformattedThing !== "") {
 			let selection = new vscode.Range(newPos, newPos.with(newPos.line, doc.lineAt(newPos.line).text.length));
-			textTextEdits.push(vscode.TextEdit.replace(selection, reformattedItem));
+			textTextEdits.push(vscode.TextEdit.replace(selection, reformattedThing));
 		}
 	});
 
@@ -990,13 +990,79 @@ function formatItem(item: Item): string {
 }
 
 /**
+ * Helper function which creates an item out of all single parts.
+ *
+ * @param type
+ * @param name
+ * @param label
+ * @param icon
+ * @param group
+ * @param tag
+ * @param channel
+ * @param leadingWhitespaceCount
+ */
+function formatThing(thing: Thing): string {
+	// Get the configuration settings
+	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
+	let formatStyle = config.formatStyle;
+	let newLineAfterItem = config.newLineAfterItem;
+	let multilineIndentAmount = config.multilineIndentAmount;
+	let editor = vscode.window.activeTextEditor;
+	let formattedThing = "";
+
+	// Only execute if there's an active text editor
+	if (!editor) {
+		return "";
+	}
+
+	// Check for the formatting style in the user configuration
+	if (formatStyle === "Column" || formatStyle === "ChannelColumn") {
+		// Fill the required amount of tabs after each thing part. For Column Style Formatting
+		let newType = fillColumns(thing.thing_type, highestTypeLength);
+		let newBindingId = fillColumns(thing.binding_id, highestNameLength);
+		let newTypeId = fillColumns(thing.type_id, highestLabelLength);
+		let newThingId = fillColumns(thing.thing_id, highestIconLength);
+		let newLabel = fillColumns(thing.label, highestGroupLength);
+		let newLocation = fillColumns(thing.location, highestTagLength);
+		let newParameters = fillColumns(thing.parameters, highestTagLength);
+
+		// Add the leading whitespace (for group and subgroups)
+		// Add tabs to string
+		for (let i = 0; i < thing.leadingWhiteSpace; i++) {
+			newType = "\t" + newType;
+		}
+
+		if (formatStyle === "ChannelColumn") {
+			let tabs = "";
+			let tabIndent = highestTypeLength + highestNameLength + highestLabelLength + highestIconLength + highestGroupLength + highestTagLength;
+
+			for (let i = 0; i < tabIndent; i++) {
+				tabs = tabs + "\t";
+			}
+			tabs = ",\n" + tabs + " ";
+			thing.location = thing.location.replace(/,\s*/g, tabs);
+		}
+
+		// Build the formatted thing and return it
+
+		// Multiline Format Style
+	} else if (formatStyle === "Multiline") {
+	} else {
+		// @todo add window message for user
+		return "";
+	}
+
+	return "";
+}
+
+/**
  * Count the amount of whitespace starting at startPos
  *
  * @param doc
  * @param startPos
  */
 function countWhitespace(doc: vscode.TextDocument, startPos: vscode.Position): number {
-	let whitespaceRange = doc.getWordRangeAtPosition(startPos, /[ \t]+/);
+	let whitespaceRange = doc.getWordRangeAtPosition(startPos, /[ \t@]+/);
 	if (whitespaceRange && whitespaceRange.isSingleLine) {
 		return doc.getText(whitespaceRange).length;
 	}
