@@ -1,5 +1,7 @@
+import * as vscode from "vscode";
+
 class Item {
-	public line: number;
+	public range: vscode.Range;
 	public leadingWhiteSpace: number;
 
 	type: string;
@@ -11,8 +13,8 @@ class Item {
 	channel: string;
 	comment: string;
 
-	constructor(line: number, leadingWhiteSpace: number, type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string, comment?: string) {
-		this.line = line;
+	constructor(range: vscode.Range, leadingWhiteSpace: number, type: string, name: string, label: string, icon: string, group: string, tag: string, channel: string, comment?: string) {
+		this.range = range;
 		this.leadingWhiteSpace = leadingWhiteSpace;
 		this.type = type;
 		this.name = name;

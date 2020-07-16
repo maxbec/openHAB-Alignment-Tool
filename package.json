@@ -30,41 +30,6 @@
 		"vscode": "^1.40.0"
 	},
 	"license": "EPL-2.0",
-	"languages": [
-		{
-			"id": "oh-items",
-			"extensions": [
-				".items"
-			],
-			"aliases": [
-				"Items",
-				"items",
-				"openhab items"
-			]
-		},
-		{
-			"id": "oh-things",
-			"extensions": [
-				".things"
-			],
-			"aliases": [
-				"Things",
-				"things",
-				"openhab things"
-			]
-		},
-		{
-			"id": "oh-sitemaps",
-			"extensions": [
-				".sitemap"
-			],
-			"aliases": [
-				"Sitemap",
-				"sitemap",
-				"openhab sitemap"
-			]
-		}
-	],
 	"activationEvents": [
 		"onLanguage:openhab"
 	],
