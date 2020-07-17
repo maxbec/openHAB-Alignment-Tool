@@ -1,7 +1,7 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"version": "1.3.12",
+	"version": "2.0.0-beta.2",
 	"publisher": "max-beckenbauer",
 	"contributors": [
 		"Mark Hilbush"
@@ -35,48 +35,6 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [
-			{
-				"command": "extension.insert-item-generic",
-				"category": "openHAB Alignment",
-				"title": "Insert Item"
-			},
-			{
-				"command": "extension.insert-item-switch",
-				"category": "openHAB Alignment",
-				"title": "Insert Switch Item"
-			},
-			{
-				"command": "extension.insert-item-dimmer",
-				"category": "openHAB Alignment",
-				"title": "Insert Dimmer Item"
-			},
-			{
-				"command": "extension.insert-item-string",
-				"category": "openHAB Alignment",
-				"title": "Insert String Item"
-			},
-			{
-				"command": "extension.insert-item-number",
-				"category": "openHAB Alignment",
-				"title": "Insert Number Item"
-			},
-			{
-				"command": "extension.insert-item-datetime",
-				"category": "openHAB Alignment",
-				"title": "Insert DateTime Item"
-			},
-			{
-				"command": "extension.reformat-file",
-				"category": "openHAB Alignment",
-				"title": "Reformat File"
-			},
-			{
-				"command": "extension.reformat-selection",
-				"category": "openHAB Alignment",
-				"title": "Reformat Selection"
-			}
-		],
 		"configuration": {
 			"type": "object",
 			"title": "openHAB Alignment Tool",
@@ -112,57 +70,6 @@
 				}
 			}
 		},
-		"keybindings": [
-			{
-				"mac": "cmd+i cmd+i",
-				"win": "ctrl+i ctrl+i",
-				"linux": "ctrl+i ctrl+i",
-				"key": "ctrl+i ctrl+i",
-				"command": "extension.insert-item-generic"
-			},
-			{
-				"mac": "cmd+i cmd+s",
-				"win": "ctrl+i ctrl+s",
-				"linux": "ctrl+i ctrl+s",
-				"key": "ctrl+i ctrl+s",
-				"command": "extension.insert-item-switch"
-			},
-			{
-				"mac": "cmd+i cmd+d",
-				"win": "ctrl+i ctrl+d",
-				"linux": "ctrl+i ctrl+d",
-				"key": "ctrl+i ctrl+d",
-				"command": "extension.insert-item-dimmer"
-			},
-			{
-				"mac": "cmd+i cmd+r",
-				"win": "ctrl+i ctrl+r",
-				"linux": "ctrl+i ctrl+r",
-				"key": "ctrl+i ctrl+r",
-				"command": "extension.insert-item-string"
-			},
-			{
-				"mac": "cmd+i cmd+n",
-				"win": "ctrl+i ctrl+n",
-				"linux": "ctrl+i ctrl+n",
-				"key": "ctrl+i ctrl+n",
-				"command": "extension.insert-item-number"
-			},
-			{
-				"mac": "cmd+i cmd+t",
-				"win": "ctrl+i ctrl+t",
-				"linux": "ctrl+i ctrl+t",
-				"key": "ctrl+i ctrl+t",
-				"command": "extension.insert-item-datetime"
-			},
-			{
-				"mac": "cmd+i cmd+l",
-				"win": "ctrl+i ctrl+l",
-				"linux": "ctrl+i ctrl+l",
-				"key": "ctrl+i ctrl+l",
-				"command": "extension.reformat-file"
-			}
-		],
 		"menus": {
 			"editor/context": [
 				{
