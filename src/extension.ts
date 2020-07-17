@@ -379,13 +379,24 @@ function formatItem(item: Item): string {
 
 		if (formatStyle === "ChannelColumn") {
 			let tabs = "";
+			let spaces = "";
 			let tabIndent = highestTypeLength + highestNameLength + highestLabelLength + highestIconLength + highestGroupLength + highestTagLength;
 
 			for (let i = 0; i < tabIndent; i++) {
 				tabs = tabs + "\t";
 			}
-			tabs = ",\n" + tabs + " ";
-			item.channel = item.channel.replace(/,\s*/g, tabs);
+
+			var identResult = item.channel.match(/.*\="/g);
+			let identCount = 0;
+			if (identResult) {
+				identCount = identResult[0].length;
+				for (let e = 0; e < identCount; e++) {
+					spaces = spaces + " ";
+				}
+			}
+
+			item.channel = item.channel.replace(/",\s*/g, '",\n' + tabs + " ");
+			item.channel = item.channel.replace(/([^"]),\s*/g, "$1,\n" + tabs + spaces);
 		}
 
 		// Build the formatted item and return it
