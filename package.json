@@ -101,7 +101,7 @@
 					],
 					"enumDescriptions": [
 						"Formats the files in a column-style. E.g. in an items file each item is one line separated by tabs.",
-						"Formats the files in a multiline-style. E.g. in an items file each part of the channel configuration is written in a new line.",
+						"Formats the files in a column-style with each hannel parameter in a new line. E.g. in an items file each part of the channel configuration is written in a new line.",
 						"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
 					]
 				},
