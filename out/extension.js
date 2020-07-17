@@ -16,7 +16,7 @@ const REGEX_ITEM_ICON = /<.+?>/;
 const REGEX_ITEM_GROUP = /\(.+?\)/;
 const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*\]/;
 const REGEX_ITEM_CHANNEL_START = /\{\s*(\w*=".*"?,?\s*)+\}?/;
-const REGEX_ITEM_CHANNEL_END = /\S*[\},]/;
+const REGEX_ITEM_CHANNEL_END = /.*[\},]/;
 const REGEX_SITEMAP_ELEMENTS = /\b(Frame|Default|Text|Group|Switch|Selection|Setpoint|Slider|Colorpicker|Webview|Mapview|Image|Video|Chart)\b/g;
 const REGEX_THING_TYPE = /^Bridge|Thing/g;
 const REGEX_THING_ID = /\w*:\w*:\w*/;
@@ -260,7 +260,7 @@ function formatItemFile(range) {
         else {
             let itemChannelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_CHANNEL_END);
             if (itemChannelRange && itemChannelRange.isSingleLine) {
-                itemChannel += doc.getText(itemChannelRange);
+                itemChannel += doc.getText(itemChannelRange).trimLeft();
                 if (itemChannel.endsWith("}")) {
                     channelPending = false;
                 }
@@ -272,7 +272,7 @@ function formatItemFile(range) {
         }
         // Discover comment at end of line
         let itemCommentRange = doc.getWordRangeAtPosition(newPos, REGEX_EOL_COMMENT);
-        if (itemCommentRange && itemCommentRange.isSingleLine) {
+        if (itemCommentRange && itemCommentRange.isSingleLine && itemCommentRange.start.character >= newPos.character) {
             itemComment = doc.getText(itemCommentRange);
             newPos = newPos.with(newPos.line, newPos.character + itemComment.length);
             newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
