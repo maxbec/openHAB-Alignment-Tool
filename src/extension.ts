@@ -230,6 +230,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 				highestNameLength = itemName.length > highestNameLength ? itemName.length : highestNameLength;
 				newPos = newPos.with(newPos.line, newPos.character + itemName.length);
 				newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
+				lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
 			}
 		}
 		// Must have a type and name to continue
