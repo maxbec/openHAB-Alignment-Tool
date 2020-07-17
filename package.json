@@ -101,7 +101,7 @@
 					],
 					"enumDescriptions": [
 						"Formats the files in a column-style. E.g. in an items file each item is one line separated by tabs.",
-						"Formats the files in a multiline-style. E.g. in an items file each part of the channel configuration is written in a new line."
+						"Formats the files in a column-style with each hannel parameter in a new line. E.g. in an items file each part of the channel configuration is written in a new line.",
 						"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
 					]
 				},
@@ -207,7 +207,7 @@
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.17.21",
-		"@types/vscode": "^1.44.0",
+		"@types/vscode": "^1.40.0",
 		"glob": "^7.1.6",
 		"mocha": "^6.2.3",
 		"tslint": "^5.20.1",
