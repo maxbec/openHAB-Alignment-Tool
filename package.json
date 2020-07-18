@@ -1,7 +1,7 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"version": "2.0.0-beta.2",
+	"version": "2.0.0-beta.3",
 	"publisher": "max-beckenbauer",
 	"contributors": [
 		"Mark Hilbush"
@@ -59,7 +59,7 @@
 					],
 					"enumDescriptions": [
 						"Formats the files in a column-style. E.g. in an items file each item is one line separated by tabs.",
-						"Formats the files in a column-style with each hannel parameter in a new line. E.g. in an items file each part of the channel configuration is written in a new line.",
+						"Formats the files in a column-style with each channel parameter in a new line. E.g. in an items file each part of the channel configuration is written in a new line.",
 						"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
 					]
 				},
