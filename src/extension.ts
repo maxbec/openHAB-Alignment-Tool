@@ -122,6 +122,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 	// Get the format configuration settings
 	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
 	let preserveWhitespace = config.preserveWhitespace;
+	let newLineAfterItem = config.newLineAfterItem;
 
 	let leadingWhiteSpace = 0;
 
@@ -165,6 +166,9 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
 			if (itemPending) {
 				// Add the new item to the itemArray
+				if (newLineAfterItem) {
+					lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
+				}
 				itemArray.push(new Item(new vscode.Range(firstPosition, lastPosition), leadingWhiteSpace, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
 
 				// Default these to empty. They will be changed
