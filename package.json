@@ -35,6 +35,38 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"commands": [
+			{
+				"command": "extension.insert-item-generic",
+				"category": "openHAB Alignment",
+				"title": "Insert Item"
+			},
+			{
+				"command": "extension.insert-item-switch",
+				"category": "openHAB Alignment",
+				"title": "Insert Switch Item"
+			},
+			{
+				"command": "extension.insert-item-dimmer",
+				"category": "openHAB Alignment",
+				"title": "Insert Dimmer Item"
+			},
+			{
+				"command": "extension.insert-item-string",
+				"category": "openHAB Alignment",
+				"title": "Insert String Item"
+			},
+			{
+				"command": "extension.insert-item-number",
+				"category": "openHAB Alignment",
+				"title": "Insert Number Item"
+			},
+			{
+				"command": "extension.insert-item-datetime",
+				"category": "openHAB Alignment",
+				"title": "Insert DateTime Item"
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "openHAB Alignment Tool",
@@ -69,38 +101,6 @@
 					"description": "Tab indent level when formatting multiline items."
 				}
 			}
-		},
-		"menus": {
-			"editor/context": [
-				{
-					"command": "extension.insert-item-generic",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-switch",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-dimmer",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-string",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-number",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-datetime",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.reformat-file",
-					"group": "navigation"
-				}
-			]
 		}
 	},
 	"scripts": {
