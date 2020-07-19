@@ -125,6 +125,10 @@ export function generateTabFromSpaces(spaces: number): number {
 		return 0;
 	}
 
+	if (spaces === 0) {
+		return 0;
+	}
+
 	// Get the tab size setting of the current editor
 	if (editor.options.tabSize !== undefined) {
 		tabSize = +editor.options.tabSize;

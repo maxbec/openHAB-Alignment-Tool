@@ -10,12 +10,14 @@ import Thing = require("./thing");
 import Channel = require("./channel");
 
 import { type } from "os";
+import { format } from "path";
 
 // Regex patterns to match comment sections
 const REGEX_COMMENT = /^\s*\/\/.*$/;
 const REGEX_START_BLOCKCOMMENT = /^\s*\/\*.*$/;
 const REGEX_END_BLOCKCOMMENT = /^.*\s*\*\/$/;
 const REGEX_EOL_COMMENT = /\/\/.*/;
+const REGEX_OHFS_COMMENT = /^\s*\/\/\s*\#OHFS\#(\w*)\#OHFS\#$/;
 
 // Regex patterns to match parts of item definition
 const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number|Player|Rollershutter|String|Switch)(:\w+)?(:\w+)?(\(\w+,\s*\w+\))?(\(".*"\))?/;
@@ -268,6 +270,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 
 	let itemPending = false;
 	let channelPending = false;
+	var formatOption = "";
 
 	// Get the format configuration settings
 	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
@@ -292,6 +295,15 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 	let itemChannel = "";
 	let itemComment = "";
 
+	// Section lengths for items
+	highestTypeLength = 0;
+	highestNameLength = 0;
+	highestLabelLength = 0;
+	highestIconLength = 0;
+	highestGroupLength = 0;
+	highestTagLength = 0;
+	highestChannelLength = 0;
+
 	let firstLine = range ? range.start.line : 0;
 	let lastLine = range ? range.end.line : doc.lineCount - 1;
 
@@ -305,6 +317,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 		var comment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_COMMENT);
 		var blockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_START_BLOCKCOMMENT);
 		var endBlockComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_END_BLOCKCOMMENT);
+		var ohfsComment = doc.getWordRangeAtPosition(newPos.with(newPos.line, 0), REGEX_OHFS_COMMENT);
 
 		// Check if there is leading Whitespace. If Yes add one in size of a tab.
 		leadingWhiteSpace = lineText.firstNonWhitespaceCharacterIndex;
@@ -319,7 +332,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 				if (newLineAfterItem) {
 					lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
 				}
-				itemArray.push(new Item(new vscode.Range(firstPosition, lastPosition), leadingWhiteSpace, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
+				itemArray.push(new Item(new vscode.Range(firstPosition, lastPosition), leadingWhiteSpace, formatOption, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
 
 				// Default these to empty. They will be changed
 				// if they exist in the item definition
@@ -335,6 +348,13 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 			}
 			continue;
 		} else if (comment) {
+			if (ohfsComment) {
+				var ohfs = doc.getText(ohfsComment);
+				var formatOptions = ohfs.match(REGEX_OHFS_COMMENT);
+				if (formatOptions && formatOptions.length >= 1) {
+					formatOption = formatOptions[1];
+				}
+			}
 			continue;
 		} else if (blockComment && endBlockComment) {
 			isInBlockComment = false;
@@ -356,7 +376,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 		if (wordRange && wordRange.isSingleLine) {
 			if (itemPending) {
 				// Add the new item to the itemArray
-				itemArray.push(new Item(new vscode.Range(firstPosition, lastPosition), leadingWhiteSpace, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
+				itemArray.push(new Item(new vscode.Range(firstPosition, lastPosition), leadingWhiteSpace, formatOption, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
 
 				// Default these to empty. They will be changed
 				// if they exist in the item definition
@@ -467,7 +487,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 
 	if (itemPending) {
 		// Add the new item to the itemArray
-		itemArray.push(new Item(new vscode.Range(firstPosition, lastPosition), leadingWhiteSpace, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
+		itemArray.push(new Item(new vscode.Range(firstPosition, lastPosition), leadingWhiteSpace, formatOption, itemType, itemName, itemLabel, itemIcon, itemGroup, itemTag, itemChannel, itemComment));
 
 		// Default these to empty. They will be changed
 		// if they exist in the item definition
@@ -550,6 +570,7 @@ function formatThingFile(range?: vscode.Range): vscode.TextEdit[] {
 	let firstLine = range ? range.start.line : 0;
 	let lastLine = range ? range.end.line : doc.lineCount - 1;
 
+	// #OHFS#Channel#OHFS#
 	// Clear the file in case of line-by-line item definitions
 	for (let index = firstLine; index <= lastLine; index++) {
 		// Get Position at the beginning of the current line and start a selection
@@ -751,7 +772,7 @@ function insertItem(type: string, name: string, label: string, icon: string, gro
 	editor.selection = new vscode.Selection(newPos, newPos);
 	let range = new vscode.Range(newPos, newPos.with(newPos.line, 0));
 
-	let item = new Item(range, 0, type, name, label, icon, group, tag, channel);
+	let item = new Item(range, 0, "", type, name, label, icon, group, tag, channel);
 	let formattedItem = formatItem(item);
 
 	let selection = range;
@@ -769,7 +790,7 @@ function insertItem(type: string, name: string, label: string, icon: string, gro
 function formatItem(item: Item): string {
 	// Get the configuration settings
 	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
-	let formatStyle = config.formatStyle;
+	let formatStyle = item.formatOption ? item.formatOption : config.formatStyle;
 	let newLineAfterItem = config.newLineAfterItem;
 	let multilineIndentAmount = config.multilineIndentAmount;
 	let editor = vscode.window.activeTextEditor;
