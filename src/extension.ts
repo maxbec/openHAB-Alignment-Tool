@@ -866,6 +866,7 @@ function formatItem(item: Item): string {
 		return "";
 	}
 
+	formattedItem = formattedItem.trimRight();
 	formattedItem = newLineAfterItem === false ? formattedItem : formattedItem + "\n";
 	return formattedItem;
 }

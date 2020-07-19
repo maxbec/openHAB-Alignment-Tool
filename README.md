@@ -10,7 +10,7 @@ format-types will be added. Feel free to enter feature-requests.
 
 If you like the extension you have the possibility to give some support here:
 
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C01XTXB)
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.png)](https://ko-fi.com/C0C01XTXB)
 
 ## Features
 

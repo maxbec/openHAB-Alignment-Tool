@@ -783,6 +783,7 @@ function formatItem(item) {
         // @todo add window message for user
         return "";
     }
+    formattedItem = formattedItem.trimRight();
     formattedItem = newLineAfterItem === false ? formattedItem : formattedItem + "\n";
     return formattedItem;
 }

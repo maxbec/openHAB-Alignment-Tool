@@ -55,6 +55,10 @@ export function fillColumns(str: string, finalLength: number): string {
 	if (!editor) {
 		return "";
 	}
+
+	if (str === "") {
+		return "";
+	}
 	// Get the tab size setting of the current editor
 	if (editor.options.tabSize !== undefined) {
 		tabSize = +editor.options.tabSize;
