@@ -1,6 +1,8 @@
+import * as vscode from "vscode";
 class Thing {
-	public line: number;
+	public range: vscode.Range;
 	public leadingWhiteSpace: number;
+	public highestLengths: number[];
 
 	thing_type: string;
 	binding_id: string;
@@ -27,9 +29,10 @@ class Thing {
 	 * @param channel
 	 * @param comment
 	 */
-	constructor(line: number, leadingWhiteSpace: number, thing_type: string, binding_id: string, type_id: string, thing_id: string, label: string, location: string, parameters: string, comment?: string) {
-		this.line = line;
+	constructor(range: vscode.Range, leadingWhiteSpace: number, highestLengths: number[], thing_type: string, binding_id: string, type_id: string, thing_id: string, label: string, location: string, parameters: string, comment?: string) {
+		this.range = range;
 		this.leadingWhiteSpace = leadingWhiteSpace;
+		this.highestLengths = highestLengths;
 		this.thing_type = thing_type;
 		this.binding_id = binding_id;
 		this.type_id = type_id;

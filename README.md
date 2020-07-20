@@ -8,7 +8,9 @@
 This extension adds support for formatting and indenting [openHAB](http://www.openhab.org) files like `*.items`, `*.things`, etc. At the moment only `*.items` and `*.sitemap` files are supported. They can be formatted in a column or multiline style. In the future the other file types and other
 format-types will be added. Feel free to enter feature-requests.
 
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C01XTXB)
+If you like the extension you have the possibility to give some support here:
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.png)](https://ko-fi.com/C0C01XTXB)
 
 ## Features
 
