@@ -358,7 +358,6 @@ function formatItemFile(range) {
             }
             itemType = doc.getText(wordRange);
             highestLengths[0] = itemType.length > highestLengths[0] ? itemType.length : highestLengths[0];
-            highestLengths[0] = utils.generateTabFromSpaces(highestLengths[0]);
             newPos = newPos.with(newPos.line, newPos.character + itemType.length);
             newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
             firstPosition = new vscode.Position(index, 0);
@@ -368,7 +367,6 @@ function formatItemFile(range) {
             if (itemNameRange && itemNameRange.isSingleLine) {
                 itemName = doc.getText(itemNameRange);
                 highestLengths[1] = itemName.length > highestLengths[1] ? itemName.length : highestLengths[1];
-                highestLengths[1] = utils.generateTabFromSpaces(highestLengths[1]);
                 newPos = newPos.with(newPos.line, newPos.character + itemName.length);
                 newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
                 lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
@@ -383,7 +381,6 @@ function formatItemFile(range) {
         if (itemLabelRange && itemLabelRange.isSingleLine) {
             itemLabel = doc.getText(itemLabelRange);
             highestLengths[2] = itemLabel.length > highestLengths[2] ? itemLabel.length : highestLengths[2];
-            highestLengths[2] = utils.generateTabFromSpaces(highestLengths[2]);
             newPos = newPos.with(newPos.line, newPos.character + itemLabel.length);
             newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
             lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
@@ -393,7 +390,6 @@ function formatItemFile(range) {
         if (itemIconRange && itemIconRange.isSingleLine) {
             itemIcon = doc.getText(itemIconRange);
             highestLengths[3] = itemIcon.length > highestLengths[3] ? itemIcon.length : highestLengths[3];
-            highestLengths[3] = utils.generateTabFromSpaces(highestLengths[3]);
             newPos = newPos.with(newPos.line, newPos.character + itemIcon.length);
             newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
             lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
@@ -403,7 +399,6 @@ function formatItemFile(range) {
         if (itemGroupRange && itemGroupRange.isSingleLine) {
             itemGroup = doc.getText(itemGroupRange);
             highestLengths[4] = itemGroup.length > highestLengths[4] ? itemGroup.length : highestLengths[4];
-            highestLengths[4] = utils.generateTabFromSpaces(highestLengths[4]);
             newPos = newPos.with(newPos.line, newPos.character + itemGroup.length);
             newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
             lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
@@ -413,7 +408,6 @@ function formatItemFile(range) {
         if (itemTagRange && itemTagRange.isSingleLine) {
             itemTag = doc.getText(itemTagRange);
             highestLengths[5] = itemTag.length > highestLengths[5] ? itemTag.length : highestLengths[5];
-            highestLengths[5] = utils.generateTabFromSpaces(highestLengths[5]);
             newPos = newPos.with(newPos.line, newPos.character + itemTag.length);
             newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
             //console.log("Tag: " + itemTag);
@@ -424,11 +418,11 @@ function formatItemFile(range) {
             let itemChannelRange = doc.getWordRangeAtPosition(newPos, REGEX_ITEM_CHANNEL_START);
             if (itemChannelRange && itemChannelRange.isSingleLine) {
                 itemChannel += doc.getText(itemChannelRange);
+                itemChannel = itemChannel.trimRight();
                 if (!itemChannel.endsWith("}")) {
                     channelPending = true;
                 }
                 highestLengths[6] = itemChannel.length > highestLengths[6] ? itemChannel.length : highestLengths[6];
-                highestLengths[6] = utils.generateTabFromSpaces(highestLengths[6]);
                 newPos = newPos.with(newPos.line, newPos.character + itemChannel.length);
                 newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
                 lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
@@ -442,7 +436,6 @@ function formatItemFile(range) {
                     channelPending = false;
                 }
                 highestLengths[6] = itemChannel.length > highestLengths[6] ? itemChannel.length : highestLengths[6];
-                highestLengths[6] = utils.generateTabFromSpaces(highestLengths[6]);
                 newPos = newPos.with(newPos.line, newPos.character + itemChannel.length);
                 newPos = newPos.with(newPos.line, newPos.character + utils.countWhitespace(doc, newPos));
                 lastPosition = new vscode.Position(index, doc.lineAt(index).text.length);
@@ -472,6 +465,10 @@ function formatItemFile(range) {
         itemChannel = "";
         itemComment = "";
         itemPending = false;
+    }
+    for (var e = 1; e <= itemBlockCounter; e++) {
+        var item = itemArray[itemArray.length - e];
+        item.highestLengths = highestLengths;
     }
     // Insert the newly formatted items
     itemArray.forEach(function (item) {
@@ -758,15 +755,23 @@ function formatItem(item) {
     if (!editor) {
         return "";
     }
+    let highestLengths = [];
+    highestLengths[0] = utils.generateTabFromSpaces(item.highestLengths[0]);
+    highestLengths[1] = utils.generateTabFromSpaces(item.highestLengths[1]);
+    highestLengths[2] = utils.generateTabFromSpaces(item.highestLengths[2]);
+    highestLengths[3] = utils.generateTabFromSpaces(item.highestLengths[3]);
+    highestLengths[4] = utils.generateTabFromSpaces(item.highestLengths[4]);
+    highestLengths[5] = utils.generateTabFromSpaces(item.highestLengths[5]);
+    highestLengths[6] = utils.generateTabFromSpaces(item.highestLengths[6]);
     // Check for the formatting style in the user configuration
     if (formatStyle === "Column" || formatStyle === "ChannelColumn") {
         // Fill the required amount of tabs after each item part. For Column Style Formatting
-        let newType = utils.fillColumns(item.type, item.highestLengths[0]);
-        let newName = utils.fillColumns(item.name, item.highestLengths[1]);
-        let newLabel = utils.fillColumns(item.label, item.highestLengths[2]);
-        let newIcon = utils.fillColumns(item.icon, item.highestLengths[3]);
-        let newGroup = utils.fillColumns(item.group, item.highestLengths[4]);
-        let newTag = utils.fillColumns(item.tag, item.highestLengths[5]);
+        let newType = utils.fillColumns(item.type, highestLengths[0]);
+        let newName = utils.fillColumns(item.name, highestLengths[1]);
+        let newLabel = utils.fillColumns(item.label, highestLengths[2]);
+        let newIcon = utils.fillColumns(item.icon, highestLengths[3]);
+        let newGroup = utils.fillColumns(item.group, highestLengths[4]);
+        let newTag = utils.fillColumns(item.tag, highestLengths[5]);
         // Add the leading whitespace (for group and subgroups)
         // Add tabs to string
         for (let i = 0; i < item.leadingWhiteSpace; i++) {
@@ -775,7 +780,7 @@ function formatItem(item) {
         if (formatStyle === "ChannelColumn") {
             let tabs = "";
             let spaces = "";
-            let tabIndent = item.highestLengths[0] + item.highestLengths[1] + item.highestLengths[2] + item.highestLengths[3] + item.highestLengths[4] + item.highestLengths[5];
+            let tabIndent = highestLengths[0] + highestLengths[1] + highestLengths[2] + highestLengths[3] + highestLengths[4] + highestLengths[5];
             for (let i = 0; i < tabIndent; i++) {
                 tabs = tabs + "\t";
             }
@@ -807,7 +812,7 @@ function formatItem(item) {
             tabSize = +editor.options.tabSize;
         }
         // Check if Indent Amount is smaller than item type
-        if (item.highestLengths[0] > multilineIndentAmount) {
+        if (highestLengths[0] > multilineIndentAmount) {
             typeNameIndent = typeNameIndent + "\t";
         }
         else {
