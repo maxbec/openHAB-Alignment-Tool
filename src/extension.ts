@@ -868,8 +868,8 @@ function formatItem(item: Item): string {
 				}
 			}
 
-			item.channel = item.channel.replace(/",\s*/g, '",\n' + tabs + " ");
-			item.channel = item.channel.replace(/([^"]),\s*/g, "$1,\n" + tabs + spaces);
+			item.channel = item.channel.replace(/",\s*(\w*)=/g, '",\n' + tabs + " " + "$1=");
+			item.channel = item.channel.replace(/\],\s*([\>\<])/g, "],\n" + tabs + spaces + "$1");
 		}
 
 		// Build the formatted item and return it
