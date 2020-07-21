@@ -5,20 +5,31 @@
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/max-beckenbauer.oh-alignment-tool?color=orange&label=Version)](https://img.shields.io/visual-studio-marketplace/v/max-beckenbauer.oh-alignment-tool?color=orange)
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/stars/max-beckenbauer.oh-alignment-tool?label=Rating&logo=visual-studio-code)](https://img.shields.io/visual-studio-marketplace/stars/max-beckenbauer.oh-alignment-tool?label=Rating&logo=visual-studio-code)
 
-This extension adds support for formatting and indenting [openHAB](http://www.openhab.org) files like `*.items`, `*.things`, etc. At the moment only `*.items` and `*.sitemap` files are supported. They can be formatted in a column or multiline style. In the future the other file types and other
-format-types will be added. Feel free to enter feature-requests.
+This extension adds support for formatting and indenting [openHAB](http://www.openhab.org) files like `*.items`, `*.sitemap`, etc. At the moment only `*.items` and `*.sitemap` files are supported. They can be formatted in a column channel-column or multiline style. In the future the other file types
+and other format-types will be added. Feel free to add feature-requests on the github repository.
 
-If you like the extension you have the possibility to give some support here:
+If you've found the extension helpful or useful, then please consider throwing a coffee my way to help support my work. As i am a student and would like to invest more time and effort in this project this would really help me.
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.png)](https://ko-fi.com/C0C01XTXB)
 
 ## Features
 
-The tool is available via the Command-Palette. Just type `cmnd+shift+p` and enter `openHAB Alignment`. Then you get the option to format the whole file.
+The tool is available as a standard Visual-Studio-Code formatter as it uses the original vsc formatter API. You can force to formatting with right-clicking the document and clicking `Format Document...` or `Format Selection...`. If you have enabled the function in the vsc settings it even can
+`Format-On-Save`.
 
 ### Item-Formatting:
 
-![formatting item gif](images/item-formatting.gif)
+**Column-Style:**
+
+![formatting item gif](images/item-formatting-column.gif)
+
+**Column-Channel-Style:**
+
+![formatting item gif](images/item-formatting-column-channel.gif)
+
+**Multiline-Style:**
+
+![formatting item gif](images/item-formatting-multiline.gif)
 
 ### Sitemap-Formatting:
 
@@ -28,20 +39,21 @@ The tool is available via the Command-Palette. Just type `cmnd+shift+p` and ente
 
 The formatting is available for the following openhab file types:
 
--    `.items`
--    `.sitemap`
+-    `.items` (Fully functional)
+-    `.sitemap` (Under development)
+-    `.things` (Under development)
 
 ## Extension Settings
 
 ### New Line After Item
 
-With this option you can choose if you want to have a new line after each item.
+With this option you can choose if you want to have a new line inserted after each item. If there is already a single empty line after an item this settings is ignored.
 
 `"oh-alignment-tool.newLineAfterItem": true`
 
 ### Preserve Whitespace
 
-Whitespaces in front of items get preserved and won't be deleted.
+Whitespaces (tabs or spaces) in front of items get preserved and won't be deleted.
 
 `"oh-alignment-tool.preserveWhitespace": true`
 
@@ -59,7 +71,8 @@ The format style option gives you two styles between you can choose.
 -    ChannelColumn
 -    Multiline
 
-The Column style formats the files in a column-way. Each item will be on one line and the item parts are separated in columns. The Multiline format prints every part of an item in a new line and indents the different parts.
+The Column style formats the files in a column-way. Each item will be on one line and the item parts are separated in columns. With the ChannelColumn style only the channel part of an item gets formatted into multiple lines. The Multiline format prints every part of an item in a new line and indents
+the different parts.
 
 ## Known Issues
 
