@@ -55,6 +55,7 @@ export function fillColumns(str: string, finalLength: number): string {
 	if (!editor) {
 		return "";
 	}
+
 	// Get the tab size setting of the current editor
 	if (editor.options.tabSize !== undefined) {
 		tabSize = +editor.options.tabSize;
@@ -118,6 +119,10 @@ export function generateTabFromSpaces(spaces: number): number {
 
 	// Only execute if there's an active text editor
 	if (!editor) {
+		return 0;
+	}
+
+	if (spaces === 0) {
 		return 0;
 	}
 

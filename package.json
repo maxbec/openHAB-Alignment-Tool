@@ -1,7 +1,7 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"version": "1.3.12",
+	"version": "2.0.0",
 	"publisher": "max-beckenbauer",
 	"contributors": [
 		"Mark Hilbush"
@@ -65,16 +65,6 @@
 				"command": "extension.insert-item-datetime",
 				"category": "openHAB Alignment",
 				"title": "Insert DateTime Item"
-			},
-			{
-				"command": "extension.reformat-file",
-				"category": "openHAB Alignment",
-				"title": "Reformat File"
-			},
-			{
-				"command": "extension.reformat-selection",
-				"category": "openHAB Alignment",
-				"title": "Reformat Selection"
 			}
 		],
 		"configuration": {
@@ -101,7 +91,7 @@
 					],
 					"enumDescriptions": [
 						"Formats the files in a column-style. E.g. in an items file each item is one line separated by tabs.",
-						"Formats the files in a multiline-style. E.g. in an items file each part of the channel configuration is written in a new line."
+						"Formats the files in a column-style with each channel parameter in a new line. E.g. in an items file each part of the channel configuration is written in a new line.",
 						"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
 					]
 				},
@@ -111,89 +101,6 @@
 					"description": "Tab indent level when formatting multiline items."
 				}
 			}
-		},
-		"keybindings": [
-			{
-				"mac": "cmd+i cmd+i",
-				"win": "ctrl+i ctrl+i",
-				"linux": "ctrl+i ctrl+i",
-				"key": "ctrl+i ctrl+i",
-				"command": "extension.insert-item-generic"
-			},
-			{
-				"mac": "cmd+i cmd+s",
-				"win": "ctrl+i ctrl+s",
-				"linux": "ctrl+i ctrl+s",
-				"key": "ctrl+i ctrl+s",
-				"command": "extension.insert-item-switch"
-			},
-			{
-				"mac": "cmd+i cmd+d",
-				"win": "ctrl+i ctrl+d",
-				"linux": "ctrl+i ctrl+d",
-				"key": "ctrl+i ctrl+d",
-				"command": "extension.insert-item-dimmer"
-			},
-			{
-				"mac": "cmd+i cmd+r",
-				"win": "ctrl+i ctrl+r",
-				"linux": "ctrl+i ctrl+r",
-				"key": "ctrl+i ctrl+r",
-				"command": "extension.insert-item-string"
-			},
-			{
-				"mac": "cmd+i cmd+n",
-				"win": "ctrl+i ctrl+n",
-				"linux": "ctrl+i ctrl+n",
-				"key": "ctrl+i ctrl+n",
-				"command": "extension.insert-item-number"
-			},
-			{
-				"mac": "cmd+i cmd+t",
-				"win": "ctrl+i ctrl+t",
-				"linux": "ctrl+i ctrl+t",
-				"key": "ctrl+i ctrl+t",
-				"command": "extension.insert-item-datetime"
-			},
-			{
-				"mac": "cmd+i cmd+l",
-				"win": "ctrl+i ctrl+l",
-				"linux": "ctrl+i ctrl+l",
-				"key": "ctrl+i ctrl+l",
-				"command": "extension.reformat-file"
-			}
-		],
-		"menus": {
-			"editor/context": [
-				{
-					"command": "extension.insert-item-generic",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-switch",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-dimmer",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-string",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-number",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.insert-item-datetime",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.reformat-file",
-					"group": "navigation"
-				}
-			]
 		}
 	},
 	"scripts": {
@@ -207,7 +114,7 @@
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.17.21",
-		"@types/vscode": "^1.44.0",
+		"@types/vscode": "^1.40.0",
 		"glob": "^7.1.6",
 		"mocha": "^6.2.3",
 		"tslint": "^5.20.1",
