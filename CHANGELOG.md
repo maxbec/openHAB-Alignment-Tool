@@ -2,6 +2,16 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [2.0.0] - 21.07.2020
+
+## Changed
+
+-    Implemented the Visual-Studio-Code formatter API. The extension is now a proper formatting tool and can use all the formatting functions integrated in the standard vsc installation (Like format-on-save, etc.).
+
+## Fixed
+
+-    Fixed a lot of bugs regarding special formatting features for the \*.items files.
+
 ## [1.3.11] - 01.03.2020
 
 ## Added
