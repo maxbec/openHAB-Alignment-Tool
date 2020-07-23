@@ -10,7 +10,8 @@ and other format-types will be added. Feel free to add feature-requests on the g
 
 If you've found the extension helpful or useful, then please consider throwing a coffee my way to help support my work. As i am a student and would like to invest more time and effort in this project this would really help me.
 
-[Ko-Fi Donation to MaxBec](https://ko-fi.com/C0C01XTXB)
+-    [Ko-Fi Donation to MaxBec](https://ko-fi.com/C0C01XTXB)
+-    [PayPal Donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=58GE7PE2EAQAY&source=url)
 
 ## Features
 
@@ -31,9 +32,30 @@ The tool is available as a standard Visual-Studio-Code formatter as it uses the 
 
 ![formatting item gif](images/item-formatting-multiline.gif)
 
-### Sitemap-Formatting:
+**Sitemap-Formatting:**
 
 ![formatting sitemap gif](images/sitemap-formatting.gif)
+
+## Special Comment Tags
+
+With the new version (v2) of this extension there are introduced new **Special Comment Tags** you can use in your `_.items_ file code, to change the way the extension is formatting your code.
+
+**New Group Tag**
+
+`// #OHNG#`
+
+With this tag you can start a new formatting group for an item section. The tracking of the longest item parts is resetted and will be set to the longest item part in the new group. The following image shows an example of a formatting group:
+
+![new formatting group](images/ng_formatting.png)
+
+**New Group Tag**
+
+`// #OHFS#%FORMATTING_STYLE%#OHFS#`
+
+With this tag you can change the formatting of the following item definitions from the default formatting style selected in the VSC settings to a new style inserted in `%FORMATTING_STYLE%`. So just replace `%FORMATTING_STYLE%` with `Column`, `ChannelColumn` or `Multiline`. The following image shows
+an example of a Multiline formatted part in a ChannelColumn document:
+
+![new formatting style](images/fs_formatting.png)
 
 ## Limitations
 
