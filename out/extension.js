@@ -305,8 +305,8 @@ function formatItemFile(range) {
             else if (ohngComment) {
                 // Insert the newly formatted items
                 for (var i = 1; i <= itemBlockCounter; i++) {
-                    var test = itemArray[itemArray.length - i];
-                    test.highestLengths = highestLengths;
+                    var newItem = itemArray[itemArray.length - i];
+                    newItem.highestLengths = [...highestLengths];
                 }
                 // Section lengths for items
                 highestLengths[0] = 0;
@@ -468,7 +468,7 @@ function formatItemFile(range) {
     }
     for (var e = 1; e <= itemBlockCounter; e++) {
         var item = itemArray[itemArray.length - e];
-        item.highestLengths = highestLengths;
+        item.highestLengths = [...highestLengths];
     }
     // Insert the newly formatted items
     itemArray.forEach(function (item) {
