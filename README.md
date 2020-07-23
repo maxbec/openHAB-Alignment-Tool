@@ -10,7 +10,8 @@ and other format-types will be added. Feel free to add feature-requests on the g
 
 If you've found the extension helpful or useful, then please consider throwing a coffee my way to help support my work. As i am a student and would like to invest more time and effort in this project this would really help me.
 
-[Ko-Fi Donation to MaxBec](https://ko-fi.com/C0C01XTXB)
+-    [Ko-Fi Donation to MaxBec](https://ko-fi.com/C0C01XTXB)
+-    [PayPal Donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=58GE7PE2EAQAY&source=url)
 
 ## Features
 
