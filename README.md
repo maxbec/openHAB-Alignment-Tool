@@ -48,7 +48,7 @@ With this tag you can start a new formatting group for an item section. The trac
 
 ![new formatting group](images/ng_formatting.png)
 
-**New Group Tag**
+**New Formatting Style**
 
 `// #OHFS#%FORMATTING_STYLE%#OHFS#`
 
