@@ -22,15 +22,15 @@ The tool is available as a standard Visual-Studio-Code formatter as it uses the 
 
 **Column-Style:**
 
-![formatting item gif](images/item-formatting-column.gif)
+![formatting item gif](images/items_column.png)
 
 **Column-Channel-Style:**
 
-![formatting item gif](images/item-formatting-column-channel.gif)
+![formatting item gif](images/items_channelcolumn.png)
 
 **Multiline-Style:**
 
-![formatting item gif](images/item-formatting-multiline.gif)
+![formatting item gif](images/items_multiline.png)
 
 **Sitemap-Formatting:**
 
