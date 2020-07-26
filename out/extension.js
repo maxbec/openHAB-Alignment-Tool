@@ -56,15 +56,16 @@ function activate(context) {
     // Formatter implementation
     context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider("openhab", {
         provideDocumentFormattingEdits: (document, options, token) => {
+            let config = vscode.workspace.getConfiguration("oh-alignment-tool");
             // Check the file type, clean the file and format it
             if (document.fileName.includes(".sitemap")) {
-                return formatSitemapFile();
+                return config.enableBetaFeatures ? formatSitemapFile() : undefined;
             }
             else if (document.fileName.includes(".items")) {
                 return formatItemFile();
             }
             else if (document.fileName.includes(".things")) {
-                return formatThingFile();
+                return config.enableBetaFeatures ? formatThingFile() : undefined;
             }
             else {
                 return undefined;

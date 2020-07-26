@@ -99,6 +99,11 @@
 					"type": "number",
 					"default": 3,
 					"description": "Tab indent level when formatting multiline items."
+				},
+				"oh-alignment-tool.enableBetaFeatures": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enable beta features like sitemap formatting or thing file formatting."
 				}
 			}
 		}
