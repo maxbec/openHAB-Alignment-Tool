@@ -272,8 +272,7 @@ function formatItemFile(range) {
         if (preserveWhitespace === false) {
             leadingWhiteSpace = 0;
         }
-        // If line is empty or contains a comment continue to the next line
-        if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
+        if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace || comment || blockComment || endBlockComment || isInBlockComment) {
             if (itemPending) {
                 // Add the new item to the itemArray
                 if (newLineAfterItem) {
@@ -293,6 +292,9 @@ function formatItemFile(range) {
                 itemComment = "";
                 itemPending = false;
             }
+        }
+        // If line is empty or contains a comment continue to the next line
+        if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
             continue;
         }
         else if (comment) {
