@@ -26,7 +26,10 @@ class Item {
 		this.icon = icon.replace(/\<\s*/, "<").replace(/\s*\>/, ">");
 		this.group = group.replace(/\(\s*/, "(").replace(/\s*\)/, ")");
 		this.tag = tag;
-		this.channel = channel.replace(/\{\s*/, "{").replace(/\s*\}/, "}");
+		this.channel = channel
+			.replace(/\{\s*/, "{")
+			.replace(/\s*\}/, "}")
+			.replace(/\s*,\s*/, ", ");
 		this.comment = comment ? comment : "";
 	}
 }

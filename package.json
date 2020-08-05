@@ -1,7 +1,7 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"version": "2.0.7",
+	"version": "2.0.8",
 	"publisher": "max-beckenbauer",
 	"contributors": [
 		"Mark Hilbush"
@@ -95,10 +95,15 @@
 						"Formats the files in a multiline-style. E.g. in an items file each part of an item is written in a new line."
 					]
 				},
-				"oh-alignment-tool.multilineIndentAmount": {
+				"oh-alignment-tool.minimumIndentAmount": {
 					"type": "number",
-					"default": 3,
-					"description": "Tab indent level when formatting multiline items."
+					"default": 4,
+					"description": "Minimum separation of thing or item parts."
+				},
+				"oh-alignment-tool.enableBetaFeatures": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enable beta features like sitemap formatting or thing file formatting."
 				}
 			}
 		}

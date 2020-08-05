@@ -46,6 +46,7 @@ export function fillColumns(str: string, finalLength: number): string {
 	let tabSize = 0;
 	let gapLength = 0;
 	let strLength = 0;
+	let tab = "";
 
 	// Check it item is empty
 	if (finalLength === 0) {
@@ -61,13 +62,22 @@ export function fillColumns(str: string, finalLength: number): string {
 		tabSize = +editor.options.tabSize;
 	}
 
-	// Calculate the width of the column gap
-	strLength = Math.floor(str.length / tabSize);
-	gapLength = finalLength - strLength;
+	if (editor.options.insertSpaces) {
+		for (let e = 0; e < tabSize + finalLength - str.length; e++) {
+			tab += " ";
+		}
+		str += tab;
+	} else {
+		tab = "\t";
 
-	// Add tabs to string
-	for (let i = 0; i < gapLength; i++) {
-		str = str + "\t";
+		// Calculate the width of the column gap
+		strLength = Math.floor(str.length / tabSize);
+		gapLength = finalLength - strLength;
+
+		// Add tabs to string
+		for (let i = 0; i < gapLength; i++) {
+			str += tab;
+		}
 	}
 
 	return str;
@@ -79,10 +89,11 @@ export function fillColumns(str: string, finalLength: number): string {
  * @param str
  * @param finalLength
  */
-export function fillMultiLines(str: string, indenAmount: number, leadingWhiteSpace: number): string {
+export function fillMultiLines(str: string, indentAmount: number, leadingWhiteSpace: number): string {
 	let editor = vscode.window.activeTextEditor;
 	let gap = "";
 	let indent = "";
+	let tabSize = 0;
 
 	// Only execute if there's an active text editor
 	if (!editor) {
@@ -93,14 +104,25 @@ export function fillMultiLines(str: string, indenAmount: number, leadingWhiteSpa
 		return "";
 	}
 
-	// Add tabs to string
-	for (let i = 0; i < indenAmount; i++) {
-		gap = gap + "\t";
+	// Get the tab size setting of the current editor
+	if (editor.options.tabSize !== undefined) {
+		tabSize = +editor.options.tabSize;
+	}
+
+	if (editor.options.insertSpaces) {
+		for (let e = 0; e < indentAmount; e++) {
+			gap += " ";
+		}
+	} else {
+		// Add tabs to string
+		for (let i = 0; i < indentAmount; i++) {
+			gap += "\t";
+		}
 	}
 
 	// Add tabs to string
 	for (let i = 0; i < leadingWhiteSpace; i++) {
-		indent = indent + "\t";
+		indent += editor.options.insertSpaces ? " " : "\t";
 	}
 
 	str = "\n" + indent + gap + str;

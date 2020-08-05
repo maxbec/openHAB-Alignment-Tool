@@ -27,7 +27,7 @@ const REGEX_ITEM_LABEL = /\".+?\"/;
 const REGEX_ITEM_ICON = /<.+?>/;
 const REGEX_ITEM_GROUP = /\(.+?\)/;
 const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*\]/;
-const REGEX_ITEM_CHANNEL_START = /\{\s*(\w*="[^\}]*"?,?\s*)+\}?/;
+const REGEX_ITEM_CHANNEL_START = /\{\s*(\w*\s?=\s?"[^\}]*"?,?\s*)+\}?/;
 const REGEX_ITEM_CHANNEL_END = /.*[\},]/;
 
 const REGEX_SITEMAP_ELEMENTS = /\b(Frame|Default|Text|Group|Switch|Selection|Setpoint|Slider|Colorpicker|Webview|Mapview|Image|Video|Chart)\b/g;
@@ -73,13 +73,14 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerDocumentFormattingEditProvider("openhab", {
 			provideDocumentFormattingEdits: (document, options, token) => {
+				let config = vscode.workspace.getConfiguration("oh-alignment-tool");
 				// Check the file type, clean the file and format it
 				if (document.fileName.includes(".sitemap")) {
-					return formatSitemapFile();
+					return config.enableBetaFeatures ? formatSitemapFile() : undefined;
 				} else if (document.fileName.includes(".items")) {
 					return formatItemFile();
 				} else if (document.fileName.includes(".things")) {
-					return formatThingFile();
+					return config.enableBetaFeatures ? formatThingFile() : undefined;
 				} else {
 					return undefined;
 				}
@@ -321,8 +322,7 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 			leadingWhiteSpace = 0;
 		}
 
-		// If line is empty or contains a comment continue to the next line
-		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
+		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace || comment || blockComment || endBlockComment || isInBlockComment) {
 			if (itemPending) {
 				// Add the new item to the itemArray
 				if (newLineAfterItem) {
@@ -343,6 +343,10 @@ function formatItemFile(range?: vscode.Range): vscode.TextEdit[] {
 				itemComment = "";
 				itemPending = false;
 			}
+		}
+
+		// If line is empty or contains a comment continue to the next line
+		if (lineText.text.length === 0 || lineText.isEmptyOrWhitespace) {
 			continue;
 		} else if (comment) {
 			if (ohfsComment) {
@@ -823,7 +827,6 @@ function formatItem(item: Item): string {
 	let config = vscode.workspace.getConfiguration("oh-alignment-tool");
 	let formatStyle = item.formatOption ? item.formatOption : config.formatStyle;
 	let newLineAfterItem = config.newLineAfterItem;
-	let multilineIndentAmount = config.multilineIndentAmount;
 	let editor = vscode.window.activeTextEditor;
 	let formattedItem = "";
 
@@ -833,14 +836,27 @@ function formatItem(item: Item): string {
 	}
 
 	let highestLengths = [];
+	let indentWithSpaces = editor.options.insertSpaces;
+	let minIndent = config.minimumIndentAmount;
 
-	highestLengths[0] = utils.generateTabFromSpaces(item.highestLengths[0]);
-	highestLengths[1] = utils.generateTabFromSpaces(item.highestLengths[1]);
-	highestLengths[2] = utils.generateTabFromSpaces(item.highestLengths[2]);
-	highestLengths[3] = utils.generateTabFromSpaces(item.highestLengths[3]);
-	highestLengths[4] = utils.generateTabFromSpaces(item.highestLengths[4]);
-	highestLengths[5] = utils.generateTabFromSpaces(item.highestLengths[5]);
-	highestLengths[6] = utils.generateTabFromSpaces(item.highestLengths[6]);
+	if (!indentWithSpaces) {
+		highestLengths[0] = utils.generateTabFromSpaces(item.highestLengths[0]);
+		highestLengths[1] = utils.generateTabFromSpaces(item.highestLengths[1]);
+		highestLengths[2] = utils.generateTabFromSpaces(item.highestLengths[2]);
+		highestLengths[3] = utils.generateTabFromSpaces(item.highestLengths[3]);
+		highestLengths[4] = utils.generateTabFromSpaces(item.highestLengths[4]);
+		highestLengths[5] = utils.generateTabFromSpaces(item.highestLengths[5]);
+		highestLengths[6] = utils.generateTabFromSpaces(item.highestLengths[6]);
+	} else {
+		highestLengths[0] = item.highestLengths[0];
+		highestLengths[0] = item.highestLengths[0];
+		highestLengths[1] = item.highestLengths[1];
+		highestLengths[2] = item.highestLengths[2];
+		highestLengths[3] = item.highestLengths[3];
+		highestLengths[4] = item.highestLengths[4];
+		highestLengths[5] = item.highestLengths[5];
+		highestLengths[6] = item.highestLengths[6];
+	}
 
 	// Check for the formatting style in the user configuration
 	if (formatStyle === "Column" || formatStyle === "ChannelColumn") {
@@ -855,16 +871,16 @@ function formatItem(item: Item): string {
 		// Add the leading whitespace (for group and subgroups)
 		// Add tabs to string
 		for (let i = 0; i < item.leadingWhiteSpace; i++) {
-			newType = "\t" + newType;
+			newType = editor.options.insertSpaces ? " " + newType : "\t" + newType;
 		}
 
 		if (formatStyle === "ChannelColumn") {
 			let tabs = "";
 			let spaces = "";
-			let tabIndent = highestLengths[0] + highestLengths[1] + highestLengths[2] + highestLengths[3] + highestLengths[4] + highestLengths[5];
+			let tabIndent = newType.length + newName.length + newLabel.length + newIcon.length + newGroup.length + newTag.length;
 
 			for (let i = 0; i < tabIndent; i++) {
-				tabs = tabs + "\t";
+				tabs += editor.options.insertSpaces ? " " : "\t";
 			}
 
 			var identResult = item.channel.match(/^\{(\w*)="/);
@@ -888,41 +904,26 @@ function formatItem(item: Item): string {
 
 		// Multiline Format Style
 	} else if (formatStyle === "Multiline") {
-		// If item type is longer than the indent, make sure there's at least one space
-		let typeNameIndent = "";
-		let tabSize = 0;
-		let indent = "";
+		// Fill the required amount of tabs after each item part. For Column Style Formatting
+		let newMultiType = utils.fillColumns(item.type, highestLengths[0]);
 
-		// Get the tab size setting of the current editor
-		if (editor.options.tabSize !== undefined) {
-			tabSize = +editor.options.tabSize;
-		}
-
-		// Check if Indent Amount is smaller than item type
-		if (highestLengths[0] > multilineIndentAmount) {
-			typeNameIndent = typeNameIndent + "\t";
-		} else {
-			let gapSize = multilineIndentAmount - Math.floor(item.type.length / tabSize);
-			for (let index = 0; index < gapSize; index++) {
-				typeNameIndent = typeNameIndent + "\t";
-			}
-		}
-
-		// Check if item parts are empty
-		let newLabel = utils.fillMultiLines(item.label, multilineIndentAmount, item.leadingWhiteSpace);
-		let newIcon = utils.fillMultiLines(item.icon, multilineIndentAmount, item.leadingWhiteSpace);
-		let newGroup = utils.fillMultiLines(item.group, multilineIndentAmount, item.leadingWhiteSpace);
-		let newTag = utils.fillMultiLines(item.tag, multilineIndentAmount, item.leadingWhiteSpace);
-		let newChannel = utils.fillMultiLines(item.channel, multilineIndentAmount, item.leadingWhiteSpace);
-		let newComment = utils.fillMultiLines(item.comment, multilineIndentAmount, item.leadingWhiteSpace);
-
-		// Insert a new line after the item if config says so
 		// Add the leading whitespace (for group and subgroups)
 		// Add tabs to string
 		for (let i = 0; i < item.leadingWhiteSpace; i++) {
-			indent = "\t" + indent;
+			newMultiType = editor.options.insertSpaces ? " " + newMultiType : "\t" + newMultiType;
 		}
-		formattedItem = indent + item.type + typeNameIndent + item.name + newLabel + newIcon + newGroup + newTag + newChannel + newComment;
+
+		let newMultiTypeLength = indentWithSpaces ? newMultiType.length : utils.generateTabFromSpaces(newMultiType.length);
+
+		// Check if item parts are empty
+		let newLabel = utils.fillMultiLines(item.label, newMultiTypeLength, item.leadingWhiteSpace);
+		let newIcon = utils.fillMultiLines(item.icon, newMultiTypeLength, item.leadingWhiteSpace);
+		let newGroup = utils.fillMultiLines(item.group, newMultiTypeLength, item.leadingWhiteSpace);
+		let newTag = utils.fillMultiLines(item.tag, newMultiTypeLength, item.leadingWhiteSpace);
+		let newChannel = utils.fillMultiLines(item.channel, newMultiTypeLength, item.leadingWhiteSpace);
+		let newComment = utils.fillMultiLines(item.comment, newMultiTypeLength, item.leadingWhiteSpace);
+
+		formattedItem = newMultiType + item.name + newLabel + newIcon + newGroup + newTag + newChannel + newComment;
 	} else {
 		// @todo add window message for user
 		return "";
