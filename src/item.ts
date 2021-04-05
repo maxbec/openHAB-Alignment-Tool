@@ -29,7 +29,7 @@ class Item {
 		this.channel = channel
 			.replace(/\{\s*/, "{")
 			.replace(/\s*\}/, "}")
-			.replace(/\s*,\s*/, ", ");
+			.replace(/\s*",\s*/, "\", ");
 		this.comment = comment ? comment : "";
 	}
 }
