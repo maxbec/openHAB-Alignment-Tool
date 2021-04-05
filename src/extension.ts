@@ -892,7 +892,7 @@ function formatItem(item: Item): string {
 				}
 			}
 
-			item.channel = item.channel.replace(/",\s*(\w*)=/g, '",\n' + tabs + " " + "$1=");
+			item.channel = item.channel.replace(/(?<!.*\[.*)",\s*(\w*)=(?!\])/g, '",\n' + tabs + " " + "$1=");
 			item.channel = item.channel.replace(/\],\s*([\>\<])/g, "],\n" + tabs + spaces + "$1");
 		}
 
