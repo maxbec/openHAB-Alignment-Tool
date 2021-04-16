@@ -2,6 +2,8 @@
 
 import * as vscode from "vscode";
 
+import { commands, ExtensionContext, extensions, window, workspace } from "vscode";
+
 import * as utils from "./utils";
 
 import Item = require("./item");
@@ -21,7 +23,7 @@ const REGEX_OHFS_COMMENT = /^\s*\/\/\s*\#OHFS\#(\w*)\#OHFS\#$/;
 const REGEX_OHNG_COMMENT = /^\s*\/\/\s*\#OHNG\#$/;
 
 // Regex patterns to match parts of item definition
-const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number|Player|Rollershutter|String|Switch)(:(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number(:\w+)?|Player|Rollershutter|String|Switch))?(:(EQUALITY|AND|OR|NAND|NOR|SUM|AVG|MIN|MAX|COUNT|LATEST|EARLIEST))?(\((\w*\d*,*\s*)*\))?(\(".*"\))?/;
+const REGEX_ITEM_TYPE = /(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number(:\w+)?|Player|Rollershutter|String|Switch)(:(Color|Contact|DateTime|Dimmer|Group|Image|Location|Number(:\w+)?|Player|Rollershutter|String|Switch))?(:(EQUALITY|AND|OR|NAND|NOR|SUM|AVG|MIN|MAX|COUNT|LATEST|EARLIEST))?(\((\w*\d*,*\s*)*\))?(\(".*"\))?/;
 const REGEX_ITEM_NAME = /[a-zA-Z0-9äöüÄÖÜ][a-zA-Z0-9äöüÄÖÜ_]*/;
 const REGEX_ITEM_LABEL = /\".+?\"/;
 const REGEX_ITEM_ICON = /<.+?>/;
@@ -29,6 +31,7 @@ const REGEX_ITEM_GROUP = /\(.+?\)/;
 const REGEX_ITEM_TAG = /\[\s*(\".+?\")\s*(,\s*\".+?\"\s*)*\]/;
 const REGEX_ITEM_CHANNEL_START = /\{\s*(\w*\s?=\s?"[^\}]*"?,?\s*)+\}?/;
 const REGEX_ITEM_CHANNEL_END = /.*[\},]/;
+const REGEX_ITEM_CHANNEL_SECTION = /(\w+\=\".*?\"\s*(\[.*?\])?)+/g;
 
 const REGEX_SITEMAP_ELEMENTS = /\b(Frame|Default|Text|Group|Switch|Selection|Setpoint|Slider|Colorpicker|Webview|Mapview|Image|Video|Chart)\b/g;
 
@@ -892,8 +895,22 @@ function formatItem(item: Item): string {
 				}
 			}
 
-			item.channel = item.channel.replace(/(?<!.*\[.*)",\s*(\w*)=(?!\])/g, '",\n' + tabs + " " + "$1=");
-			item.channel = item.channel.replace(/\],\s*([\>\<])/g, "],\n" + tabs + spaces + "$1");
+			var channelResult;
+			var newChannel = "{";
+			var count = 0;
+			while ((channelResult = REGEX_ITEM_CHANNEL_SECTION.exec(item.channel)) !== null) {
+				if (count === 0) {
+					newChannel += channelResult[0];
+					count = 1;
+				} else {
+					newChannel += ",\n" + tabs + " " + channelResult[0];
+				}
+			}
+			newChannel += "}";
+			item.channel = newChannel;
+
+			//item.channel = item.channel.replace(/(?<!.*\[.*)",\s*(\w*)=(?!\])/g, '",\n' + tabs + " " + "$1=");
+			//item.channel = item.channel.replace(/\],\s*([\>\<])/g, "],\n" + tabs + spaces + "$1");
 		}
 
 		// Build the formatted item and return it
