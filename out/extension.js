@@ -4,7 +4,7 @@ exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 const utils = require("./utils");
 const vscode_1 = require("vscode");
-const Manager_1 = require("./vscode-whats-new/src/Manager");
+const Manager_1 = require("../vscode-whats-new/src/Manager");
 const contentProvider_1 = require("./contentProvider");
 const Item = require("./item");
 const Thing = require("./thing");
