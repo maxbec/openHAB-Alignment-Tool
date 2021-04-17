@@ -68,17 +68,17 @@ export class WhatsNewManager {
 
         // Get path to resource on disk
         const onDiskPath = vscode.Uri.file(
-            path.join(this.context.extensionPath, "vscode-whats-new", "ui", "whats-new.html"));
+            path.join(this.context.extensionPath, "/src/vscode-whats-new", "ui", "whats-new.html"));
         const pageUri = onDiskPath.with({ scheme: "vscode-resource" });
 
         // Local path to main script run in the webview
         const cssPathOnDisk = vscode.Uri.file(
-            path.join(this.context.extensionPath, "vscode-whats-new", "ui", "main.css"));
+            path.join(this.context.extensionPath, "/src/vscode-whats-new", "ui", "main.css"));
         const cssUri = cssPathOnDisk.with({ scheme: "vscode-resource" });
 
         // Local path to main script run in the webview
         const logoPathOnDisk = vscode.Uri.file(
-            path.join(this.context.extensionPath, "images", `vscode-${this.extensionName.toLowerCase()}-logo-readme.png`));
+            path.join(this.context.extensionPath, "/images", `vscode-${this.extensionName.toLowerCase()}-logo-readme.png`));
         const logoUri = logoPathOnDisk.with({ scheme: "vscode-resource" });
 
         panel.webview.html = this.getWebviewContentLocal(pageUri.fsPath, cssUri.toString(), logoUri.toString());
@@ -112,8 +112,7 @@ export class WhatsNewManager {
             .updateExtensionDisplayName(this.extension.packageJSON.displayName)
             .updateExtensionName(this.extensionName)
             .updateExtensionVersion(this.extension.packageJSON.version)
-            .updateRepositoryUrl(this.extension.packageJSON.repository.url.slice(
-                0, this.extension.packageJSON.repository.url.length - 4))
+            .updateRepositoryUrl(this.extension.packageJSON.repository.url)
             .updateRepositoryIssues(this.extension.packageJSON.bugs.url)
             .updateRepositoryHomepage(this.extension.packageJSON.homepage)
             .updateCSS(cssUrl)

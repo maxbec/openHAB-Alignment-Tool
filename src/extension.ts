@@ -5,7 +5,7 @@ import * as utils from "./utils";
 import * as paths from "path";
 
 import { commands } from "vscode";
-import { WhatsNewManager } from "../vscode-whats-new/src/Manager";
+import { WhatsNewManager } from "./vscode-whats-new/src/Manager";
 import { BookmarksSocialMediaProvider, BookmarksSponsorProvider, BookmarksContentProvider } from "./contentProvider";
 
 import Item = require("./item");
