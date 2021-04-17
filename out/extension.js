@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 const utils = require("./utils");
+// provide the data
+const ContentProvider_1 = require("./vscode-whats-new/src/ContentProvider");
+const Manager_1 = require("./vscode-whats-new/src/Manager");
 const Item = require("./item");
 const Thing = require("./thing");
 // Regex patterns to match comment sections
@@ -53,6 +56,7 @@ function getDocumentRange(document) {
  * @param context
  */
 function activate(context) {
+    let extensionId = "max-beckenbauer.oh-alignment-tool";
     // Formatter implementation
     context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider("openhab", {
         provideDocumentFormattingEdits: (document, options, token) => {
@@ -104,6 +108,13 @@ function activate(context) {
     vscode.commands.registerCommand("extension.insert-item-datetime", () => {
         commandInsertNewDateTimeItem();
     });
+    // register the providers
+    const provider = new BookmarksContentProvider();
+    const viewer = new Manager_1.WhatsNewManager(context).registerContentProvider("alefragnani", "bookmarks", provider).registerSocialMediaProvider(new BookmarksSocialMediaProvider()).registerSponsorProvider(new BookmarksSponsorProvider());
+    // show the page (if necessary)
+    viewer.showPageInActivation();
+    // register the additional command (not really necessary, unless you want a command registered in your extension)
+    context.subscriptions.push(vscode.commands.registerCommand("bookmarks.whatsNew", () => viewer.showPage()));
 }
 exports.activate = activate;
 /**
@@ -903,4 +914,81 @@ function formatThing(thing) {
     }
     return "";
 }
+/**----------------------------------------------------------------------------------------------------------
+ * MESSAGE FUNCTIONS SECTION
+ *---------------------------------------------------------------------------------------------------------*/
+class BookmarksContentProvider {
+    provideHeader(logoUrl) {
+        return {
+            logo: { src: logoUrl, height: 50, width: 50 },
+            message: `<b>Bookmarks</b> helps you to navigate in your code, <b>moving</b>
+            between important positions easily and quickly. No more need
+            to <i>search for code</i>. It also supports a set of <b>selection</b>
+            commands, which allows you to select bookmarked lines and regions between
+            lines.`,
+        };
+    }
+    provideChangeLog() {
+        let changeLog = [];
+        changeLog.push({ kind: ContentProvider_1.ChangeLogKind.VERSION, detail: { releaseNumber: "12.1.0", releaseDate: "December 2020" } });
+        changeLog.push({
+            kind: ContentProvider_1.ChangeLogKind.NEW,
+            detail: {
+                message: "Support submenu for editor commands",
+                id: 351,
+                kind: IssueKind.Issue,
+            },
+        });
+        changeLog.push({
+            kind: ContentProvider_1.ChangeLogKind.CHANGED,
+            detail: {
+                message: "Setting <b>bookmarks.navigateThroughAllFiles</b> is now <b>true</b> by default",
+                id: 102,
+                kind: IssueKind.Issue,
+            },
+        });
+        changeLog.push({
+            kind: ContentProvider_1.ChangeLogKind.INTERNAL,
+            detail: {
+                message: "Remove unnecessary files from extension package",
+                id: 355,
+                kind: IssueKind.Issue,
+            },
+        });
+    }
+}
+exports.BookmarksContentProvider = BookmarksContentProvider;
+class BookmarksSocialMediaProvider {
+    provideSocialMedias() {
+        return [
+            {
+                title: "Follow me on Twitter",
+                link: "https://www.twitter.com/alefragnani",
+            },
+        ];
+    }
+}
+exports.BookmarksSocialMediaProvider = BookmarksSocialMediaProvider;
+class BookmarksSponsorProvider {
+    provideSponsors() {
+        const sponsors = [];
+        const sponsorCodeStream = {
+            title: "Learn more about Codestream",
+            link: "https://sponsorlink.codestream.com/?utm_source=vscmarket&utm_campaign=bookmarks&utm_medium=banner",
+            image: {
+                light: "https://alt-images.codestream.com/codestream_logo_bookmarks.png",
+                dark: "https://alt-images.codestream.com/codestream_logo_bookmarks.png",
+            },
+            width: 52,
+            message: `<p>Eliminate context switching and costly distractions.
+                Create and merge PRs and perform code reviews from inside your
+                IDE while using jump-to-definition, your keybindings, and other IDE favorites.</p>`,
+            extra: `<a title="Learn more about CodeStream" href="https://sponsorlink.codestream.com/?utm_source=vscmarket&utm_campaign=bookmarks&utm_medium=banner">
+                Learn more</a>`,
+        };
+        sponsors.push(sponsorCodeStream);
+        return sponsors;
+    }
+}
+exports.BookmarksSponsorProvider = BookmarksSponsorProvider;
 //# sourceMappingURL=extension.js.map
