@@ -1,7 +1,7 @@
 {
 	"name": "oh-alignment-tool",
 	"displayName": "openHAB Alignment Tool",
-	"version": "2.0.8",
+	"version": "2.0.10",
 	"publisher": "max-beckenbauer",
 	"contributors": [
 		"Mark Hilbush"
@@ -65,6 +65,15 @@
 				"command": "extension.insert-item-datetime",
 				"category": "openHAB Alignment",
 				"title": "Insert DateTime Item"
+			},
+			{
+				"command": "extension.whatsNew",
+				"title": "%extension.commands.whatsNew.title%",
+				"category": "%extension.commands.category.bookmarks%"
+			},
+			{
+				"command": "_extension.whatsNewContextMenu",
+				"title": "%extension.commands.whatsNewContextMenu.title%"
 			}
 		],
 		"configuration": {

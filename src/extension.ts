@@ -129,16 +129,6 @@ export function activate(context: vscode.ExtensionContext) {
 		commandInsertNewDateTimeItem();
 	});
 
-	// register the providers
-	const provider = new BookmarksContentProvider();
-	const viewer = new WhatsNewManager(context).registerContentProvider("alefragnani", "bookmarks", provider).registerSocialMediaProvider(new BookmarksSocialMediaProvider()).registerSponsorProvider(new BookmarksSponsorProvider());
-
-	// show the page (if necessary)
-	viewer.showPageInActivation();
-
-	// register the additional command (not really necessary, unless you want a command registered in your extension)
-	context.subscriptions.push(vscode.commands.registerCommand("bookmarks.whatsNew", () => viewer.showPage()));
-
 	registerWhatsNew(context);
 }
 
@@ -1023,8 +1013,8 @@ function formatThing(thing: Thing): string {
  *---------------------------------------------------------------------------------------------------------*/
 function registerWhatsNew(context: vscode.ExtensionContext) {
 	const provider = new BookmarksContentProvider();
-	const viewer = new WhatsNewManager(context).registerContentProvider("max-beckenbauer", "openHAB Alignment Tool", provider).registerSocialMediaProvider(new BookmarksSocialMediaProvider()).registerSponsorProvider(new BookmarksSponsorProvider());
+	const viewer = new WhatsNewManager(context).registerContentProvider("max-beckenbauer", "oh-alignment-tool", provider).registerSocialMediaProvider(new BookmarksSocialMediaProvider()).registerSponsorProvider(new BookmarksSponsorProvider());
 	viewer.showPageInActivation();
-	context.subscriptions.push(commands.registerCommand("ohat.whatsNew", () => viewer.showPage()));
-	context.subscriptions.push(commands.registerCommand("_ohat.whatsNewContextMenu", () => viewer.showPage()));
+	context.subscriptions.push(commands.registerCommand("extension.whatsNew", () => viewer.showPage()));
+	context.subscriptions.push(commands.registerCommand("_extension.whatsNewContextMenu", () => viewer.showPage()));
 }

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 const utils = require("./utils");
 const vscode_1 = require("vscode");
@@ -108,13 +109,6 @@ function activate(context) {
     vscode.commands.registerCommand("extension.insert-item-datetime", () => {
         commandInsertNewDateTimeItem();
     });
-    // register the providers
-    const provider = new contentProvider_1.BookmarksContentProvider();
-    const viewer = new Manager_1.WhatsNewManager(context).registerContentProvider("alefragnani", "bookmarks", provider).registerSocialMediaProvider(new contentProvider_1.BookmarksSocialMediaProvider()).registerSponsorProvider(new contentProvider_1.BookmarksSponsorProvider());
-    // show the page (if necessary)
-    viewer.showPageInActivation();
-    // register the additional command (not really necessary, unless you want a command registered in your extension)
-    context.subscriptions.push(vscode.commands.registerCommand("bookmarks.whatsNew", () => viewer.showPage()));
     registerWhatsNew(context);
 }
 exports.activate = activate;
@@ -920,9 +914,9 @@ function formatThing(thing) {
  *---------------------------------------------------------------------------------------------------------*/
 function registerWhatsNew(context) {
     const provider = new contentProvider_1.BookmarksContentProvider();
-    const viewer = new Manager_1.WhatsNewManager(context).registerContentProvider("max-beckenbauer", "openHAB Alignment Tool", provider).registerSocialMediaProvider(new contentProvider_1.BookmarksSocialMediaProvider()).registerSponsorProvider(new contentProvider_1.BookmarksSponsorProvider());
+    const viewer = new Manager_1.WhatsNewManager(context).registerContentProvider("max-beckenbauer", "oh-alignment-tool", provider).registerSocialMediaProvider(new contentProvider_1.BookmarksSocialMediaProvider()).registerSponsorProvider(new contentProvider_1.BookmarksSponsorProvider());
     viewer.showPageInActivation();
-    context.subscriptions.push(vscode_1.commands.registerCommand("ohat.whatsNew", () => viewer.showPage()));
-    context.subscriptions.push(vscode_1.commands.registerCommand("_ohat.whatsNewContextMenu", () => viewer.showPage()));
+    context.subscriptions.push(vscode_1.commands.registerCommand("extension.whatsNew", () => viewer.showPage()));
+    context.subscriptions.push(vscode_1.commands.registerCommand("_extension.whatsNewContextMenu", () => viewer.showPage()));
 }
 //# sourceMappingURL=extension.js.map
