@@ -16,9 +16,9 @@
    id="svg202"
    sodipodi:docname="logo_text.svg"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
-   inkscape:export-filename="/Volumes/MobileBerta/Development_Lokal/VSC-Extensions/openHAB-Alignment-Tool/images/logo_text.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96">
+   inkscape:export-filename="/Volumes/MobileBerta/Development_Lokal/VSC-Extensions/openHAB-Alignment-Tool/images/vscode-oh-alignment-tool-logo-readme.png"
+   inkscape:export-xdpi="300.09027"
+   inkscape:export-ydpi="300.09027">
   <metadata
      id="metadata206">
     <rdf:RDF>
@@ -55,7 +55,8 @@
      fit-margin-left="1"
      fit-margin-right="1"
      fit-margin-bottom="1"
-     lock-margins="true" />
+     lock-margins="true"
+     inkscape:snap-text-baseline="true" />
   <defs
      id="defs140">
     <path
@@ -104,7 +105,8 @@
     <g
        id="g198">
       <g
-         id="g148">
+         id="g148"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#a6BZYobMX"
            opacity="1"
@@ -114,9 +116,11 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
         <g
-           id="g146">
+           id="g146"
+           style="fill:#8b8b8b;fill-opacity:0.96099299">
           <use
              xlink:href="#a6BZYobMX"
              opacity="1"
@@ -128,11 +132,13 @@
              x="0"
              y="0"
              width="100%"
-             height="100%" />
+             height="100%"
+             style="fill:#8b8b8b;fill-opacity:0.96099299" />
         </g>
       </g>
       <g
-         id="g152">
+         id="g152"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#c4K26CgJPf"
            opacity="1"
@@ -142,10 +148,12 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
       </g>
       <g
-         id="g156">
+         id="g156"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#e1s8uVkC9u"
            opacity="1"
@@ -155,7 +163,8 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
       </g>
       <g
          id="g160">
@@ -171,7 +180,8 @@
            height="100%" />
       </g>
       <g
-         id="g164">
+         id="g164"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#h3d1CtHDK"
            opacity="1"
@@ -181,10 +191,12 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
       </g>
       <g
-         id="g168">
+         id="g168"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#eHmD7QYFh"
            opacity="1"
@@ -194,7 +206,8 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
       </g>
       <g
          id="g172">
@@ -236,7 +249,8 @@
            height="100%" />
       </g>
       <g
-         id="g184">
+         id="g184"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#c101TJbeFU"
            opacity="1"
@@ -246,7 +260,8 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
       </g>
       <g
          id="g188">
@@ -262,7 +277,8 @@
            height="100%" />
       </g>
       <g
-         id="g192">
+         id="g192"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#a3YfP3s2ts"
            opacity="1"
@@ -272,10 +288,12 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
       </g>
       <g
-         id="g196">
+         id="g196"
+         style="fill:#8b8b8b;fill-opacity:0.96099299">
         <use
            xlink:href="#f1DRYNEfPf"
            opacity="1"
@@ -285,13 +303,14 @@
            x="0"
            y="0"
            width="100%"
-           height="100%" />
+           height="100%"
+           style="fill:#8b8b8b;fill-opacity:0.96099299" />
       </g>
     </g>
   </g>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:1.25;font-family:sans-serif;fill:#474747;fill-opacity:1;stroke:none"
+     style="font-style:normal;font-weight:normal;font-size:53.33330000000000126px;line-height:1.25;font-family:sans-serif;fill:#8b8b8b;fill-opacity:1;stroke:none;"
      x="207.75847"
      y="86.996895"
      id="text210"><tspan
@@ -299,7 +318,7 @@
        id="tspan208"
        x="207.75847"
        y="86.996895"
-       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:53.3333px;font-family:Montserrat;-inkscape-font-specification:'Montserrat Semi-Bold'">OpenHAB</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:53.33330000000000126px;font-family:Montserrat;-inkscape-font-specification:'Montserrat Semi-Bold';fill:#8b8b8b;fill-opacity:1;">OpenHAB</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:32px;line-height:1.25;font-family:sans-serif;fill:#e64a19;fill-opacity:1;stroke:none"
