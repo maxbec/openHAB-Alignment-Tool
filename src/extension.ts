@@ -1,10 +1,12 @@
 "use strict";
 
 import * as vscode from "vscode";
-
-import { commands, ExtensionContext, extensions, window, workspace } from "vscode";
-
 import * as utils from "./utils";
+import * as paths from "path";
+
+import { commands } from "vscode";
+import { WhatsNewManager } from "../vscode-whats-new/src/Manager";
+import { BookmarksSocialMediaProvider, BookmarksSponsorProvider, BookmarksContentProvider } from "./contentProvider";
 
 import Item = require("./item");
 import Bridge = require("./bridge");
@@ -125,6 +127,8 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("extension.insert-item-datetime", () => {
 		commandInsertNewDateTimeItem();
 	});
+
+	registerWhatsNew(context);
 }
 
 /**
@@ -1015,4 +1019,15 @@ function formatThing(thing: Thing): string {
 	}
 
 	return "";
+}
+
+/**----------------------------------------------------------------------------------------------------------
+ * MESSAGE FUNCTIONS SECTION
+ *---------------------------------------------------------------------------------------------------------*/
+function registerWhatsNew(context: vscode.ExtensionContext) {
+	const provider = new BookmarksContentProvider();
+	const viewer = new WhatsNewManager(context).registerContentProvider("max-beckenbauer", "oh-alignment-tool", provider).registerSocialMediaProvider(new BookmarksSocialMediaProvider()).registerSponsorProvider(new BookmarksSponsorProvider());
+	viewer.showPageInActivation();
+	context.subscriptions.push(commands.registerCommand("extension.whatsNew", () => viewer.showPage()));
+	context.subscriptions.push(commands.registerCommand("_extension.whatsNewContextMenu", () => viewer.showPage()));
 }

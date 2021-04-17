@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 const utils = require("./utils");
+const vscode_1 = require("vscode");
+const Manager_1 = require("../vscode-whats-new/src/Manager");
+const contentProvider_1 = require("./contentProvider");
 const Item = require("./item");
 const Thing = require("./thing");
 // Regex patterns to match comment sections
@@ -106,6 +109,7 @@ function activate(context) {
     vscode.commands.registerCommand("extension.insert-item-datetime", () => {
         commandInsertNewDateTimeItem();
     });
+    registerWhatsNew(context);
 }
 exports.activate = activate;
 /**
@@ -918,5 +922,15 @@ function formatThing(thing) {
         return "";
     }
     return "";
+}
+/**----------------------------------------------------------------------------------------------------------
+ * MESSAGE FUNCTIONS SECTION
+ *---------------------------------------------------------------------------------------------------------*/
+function registerWhatsNew(context) {
+    const provider = new contentProvider_1.BookmarksContentProvider();
+    const viewer = new Manager_1.WhatsNewManager(context).registerContentProvider("max-beckenbauer", "oh-alignment-tool", provider).registerSocialMediaProvider(new contentProvider_1.BookmarksSocialMediaProvider()).registerSponsorProvider(new contentProvider_1.BookmarksSponsorProvider());
+    viewer.showPageInActivation();
+    context.subscriptions.push(vscode_1.commands.registerCommand("extension.whatsNew", () => viewer.showPage()));
+    context.subscriptions.push(vscode_1.commands.registerCommand("_extension.whatsNewContextMenu", () => viewer.showPage()));
 }
 //# sourceMappingURL=extension.js.map
