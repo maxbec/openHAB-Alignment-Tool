@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { commands } from "vscode";
-import { WhatsNewManager } from "../../vscode-whats-new/src/Manager";
+import { WhatsNewManager } from "./vscode-whats-new/src/Manager";
 import { BookmarksSocialMediaProvider, BookmarksSponsorProvider, BookmarksContentProvider } from "./contentProvider";
 
 export function registerWhatsNew() {
