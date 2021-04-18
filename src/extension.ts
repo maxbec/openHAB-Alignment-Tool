@@ -900,7 +900,7 @@ function formatItem(item: Item): string {
 			}
 
 			var channelResult;
-			var newChannel = "{";
+			var newChannel = "";
 			var count = 0;
 			while ((channelResult = REGEX_ITEM_CHANNEL_SECTION.exec(item.channel)) !== null) {
 				if (count === 0) {
@@ -910,8 +910,10 @@ function formatItem(item: Item): string {
 					newChannel += ",\n" + tabs + " " + channelResult[0];
 				}
 			}
-			newChannel += "}";
-			item.channel = newChannel;
+
+			if (newChannel.length > 0) {
+				item.channel = "{" + newChannel + "}";
+			}
 
 			//item.channel = item.channel.replace(/(?<!.*\[.*)",\s*(\w*)=(?!\])/g, '",\n' + tabs + " " + "$1=");
 			//item.channel = item.channel.replace(/\],\s*([\>\<])/g, "],\n" + tabs + spaces + "$1");
