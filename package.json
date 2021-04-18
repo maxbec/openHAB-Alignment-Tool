@@ -125,6 +125,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"dependencies": {
+		"@types/semver": "^7.3.4",
 		"semver": "^7.3.5"
 	},
 	"devDependencies": {
@@ -136,6 +137,8 @@
 		"mocha": "^8.3.2",
 		"tslint": "^5.20.1",
 		"typescript": "^4.2.4",
-		"vscode-test": "^1.5.2"
+		"vscode-test": "^1.5.2",
+		"@types/semver": "^7.3.4",
+		"semver": "^7.3.5"
 	}
 }
