@@ -1,7 +1,5 @@
-# openHAB Alignment Tool
-
 <div align="center">
- <img width="320" src="https://raw.githubusercontent.com/MaxBec/openHAB-Alignment-Tool/master/images/logo_text.png">
+ <img width="400" src="https://raw.githubusercontent.com/MaxBec/openHAB-Alignment-Tool/master/images/logo_text.png">
 </div>
 <br></br>
 
