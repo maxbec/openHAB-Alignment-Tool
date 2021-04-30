@@ -2,6 +2,12 @@
 
 All notable changes to the openHAB Alignment Tool extension will be documented in this file.
 
+## [2.1.6] - 30.04.2021
+
+## Fixed
+
+-    Fixed a bug where the "what's new" message is shown on every startup of the extension.
+
 ## [2.1.0] - 17.04.2021
 
 ## Added
@@ -11,7 +17,6 @@ All notable changes to the openHAB Alignment Tool extension will be documented i
 ## Fixed
 
 -    Fixed a lot of bugs regarding special formatting features for the \*.items files.
-
 
 ## [2.0.0] - 21.07.2020
 
