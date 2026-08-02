@@ -1,0 +1,7 @@
+/.deploy/production.yaml @maxbec
+/.flama/paperclip-webhook.json @maxbec
+/.flama/platform-lock.json @maxbec
+/.github/dependabot.yml @maxbec
+/.github/workflows/flama-*.yml @maxbec
+/.release-please-config.json @maxbec
+/.release-please-manifest.json @maxbec

@@ -1,0 +1,35 @@
+---
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: thursday
+      time: "04:00"
+      timezone: Europe/Berlin
+    target-branch: main
+    open-pull-requests-limit: 1
+    cooldown:
+      default-days: 7
+    groups:
+      routine-updates:
+        update-types:
+          - minor
+          - patch
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: thursday
+      time: "04:00"
+      timezone: Europe/Berlin
+    target-branch: main
+    open-pull-requests-limit: 1
+    cooldown:
+      default-days: 7
+    groups:
+      routine-updates:
+        update-types:
+          - minor
+          - patch
