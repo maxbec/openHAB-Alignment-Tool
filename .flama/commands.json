@@ -1,0 +1,27 @@
+{
+  "buildable": [
+    "npm",
+    "run",
+    "compile"
+  ],
+  "affected": [
+    "npm",
+    "run",
+    "compile"
+  ],
+  "full": [
+    "npm",
+    "run",
+    "compile"
+  ],
+  "smoke": [
+    "npm",
+    "run",
+    "compile"
+  ],
+  "health": [
+    "npm",
+    "run",
+    "compile"
+  ]
+}
