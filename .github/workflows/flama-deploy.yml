@@ -18,9 +18,9 @@ jobs:
       deployments: write
       id-token: write
       attestations: read
-    uses: maxbec/flama-delivery-platform/.github/workflows/reusable-deploy.yml@e72d73ea4f6bcedb62b333026b2567bfc0cb4ef5
+    uses: maxbec/flama-delivery-platform/.github/workflows/reusable-deploy.yml@592a44ef454dcc2d5446dd937db6c0f6b24089ec
     with:
-      platform-sha: e72d73ea4f6bcedb62b333026b2567bfc0cb4ef5
+      platform-sha: 592a44ef454dcc2d5446dd937db6c0f6b24089ec
       pull-request-number: ${{ github.event.pull_request.number }}
       approved-head-sha: ${{ github.event.pull_request.head.sha }}
       merge-sha: ${{ github.event.pull_request.merge_commit_sha }}
