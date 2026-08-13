@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "repository": {
+    "owner": "maxbec",
+    "name": "openHAB-Alignment-Tool",
+    "visibility": "public"
+  },
+  "paperclip": {
+    "company": "Private",
+    "projectId": "aa708be5-300c-4d06-bc88-9d065dafb0e6",
+    "workspaceId": "4f563188-2341-48f8-982e-f03f346fbe84"
+  },
+  "profile": "fast",
+  "branches": {
+    "default": "main",
+    "stable": "main",
+    "featureTarget": "main"
+  },
+  "commands": {
+    "buildable": "./scripts/delivery buildable",
+    "affected": "./scripts/delivery affected",
+    "full": "./scripts/delivery full",
+    "smoke": "./scripts/delivery smoke",
+    "health": "./scripts/delivery health"
+  },
+  "changeDetection": {
+    "failClosed": true,
+    "broadenOn": [
+      "lockfiles",
+      "authentication",
+      "database_schema",
+      "uncertain_detection"
+    ]
+  },
+  "release": {
+    "enabled": true,
+    "strategy": "release-please",
+    "impactSource": "paperclip_task",
+    "type": "node"
+  },
+  "deployment": {
+    "deployable": false,
+    "provider": "none",
+    "manifestPath": ".deploy/production.yaml"
+  },
+  "secrets": {
+    "source": "infisical",
+    "paths": {
+      "development": "/development"
+    },
+    "exceptionsFile": ".flama/secret-exceptions.json",
+    "projectSlug": "openHAB-Alignment-Tool"
+  },
+  "platform": {
+    "repository": "maxbec/flama-delivery-platform",
+    "version": "0.5.3"
+  }
+}

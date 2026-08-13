@@ -1,0 +1,17 @@
+name: Flama Auto Merge
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    uses: maxbec/flama-delivery-platform/.github/workflows/reusable-auto-merge.yml@a3aae0cde3aabefea29c7cf3576cf2331d487e1b
+    with:
+      profile: fast
+      release-branch: main
